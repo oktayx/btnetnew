@@ -1,0 +1,4438 @@
+2015-11-26 09:27:22  caught exception in util.set_context:Request is not available in this context
+2015-11-26 09:27:22  threadproc_votes
+2015-11-26 09:27:22  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 09:27:22  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 09:27:23  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 09:27:23 http://localhost/btnet/bugs.aspx se_id cookie is null, so redirecting
+2015-11-26 09:27:23  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 09:27:23  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 09:27:23  elapsed milliseconds:0027
+2015-11-26 09:27:23  elapsed milliseconds:0077
+2015-11-26 09:27:23  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 09:27:23 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+select count(1) from users
+2015-11-26 09:27:23  elapsed milliseconds:0007
+2015-11-26 09:27:23  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 09:27:23  elapsed milliseconds:0031
+2015-11-26 09:27:23  done creating Lucene index
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+select count(1) from users
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+
+select us_username, us_id, us_password, isnull(us_salt,0) us_salt, us_active
+from users
+where us_username = N'oktay'
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= elapsed milliseconds:0004
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+update users set us_most_recent_login_datetime = getdate() where us_id = 10
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+select us_id from users where us_username = N'oktay'
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= elapsed milliseconds:0003
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= guid=e914407f-235b-491d-8c49-07a7213e0dcc
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= sql=
+insert into sessions (se_id, se_user) values('e914407f-235b-491d-8c49-07a7213e0dcc', 10)
+2015-11-26 09:27:24 http://localhost/btnet/default.aspx?url=/btnet/bugs.aspx&qs= AppPath:/btnet
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx elapsed milliseconds:0065
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx elapsed milliseconds:0136
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx sql=
+/* query dropdown */
+select qu_id, qu_desc
+from queries
+where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+or isnull(qu_user,0) = 10
+or isnull(qu_org,0) = 2
+order by qu_desc
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx elapsed milliseconds:0006
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx sql=
+select qu_id, qu_sql from queries where qu_id in
+			(select us_default_query from users where us_id = 10)
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx elapsed milliseconds:0007
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx sql=
+select isnull(pr_background_color,'#ffffff'), bg_id [id], isnull(bu_flag,0) [$FLAG], 
+ bg_short_desc [desc], isnull(pj_name,'') [project], isnull(og_name,'') [organization], isnull(ct_name,'') [category], rpt.us_username [reported by],
+ bg_reported_date [reported on], isnull(pr_name,'') [priority], isnull(asg.us_username,'') [assigned to],
+ isnull(st_name,'') [status], isnull(lu.us_username,'') [last updated by], bg_last_updated_date [last updated on]
+ from bugs 
+ left outer join bug_user on bu_bug = bg_id and bu_user = 10 
+ left outer join users rpt on rpt.us_id = bg_reported_user
+ left outer join users asg on asg.us_id = bg_assigned_to_user
+ left outer join users lu on lu.us_id = bg_last_updated_user
+ left outer join projects on pj_id = bg_project
+ left outer join orgs on og_id = bg_org
+ left outer join categories on ct_id = bg_category
+ left outer join priorities on pr_id = bg_priority
+ left outer join statuses on st_id = bg_status
+ where /* altered - both  */ (  bg_status <> 5  ) AND (  (bugs.bg_project not in (
+					select pu_project
+					from project_user_xref
+					where pu_user = 10
+					and pu_permission_level = 0))  ) order by bg_id desc
+2015-11-26 09:27:24 http://localhost/btnet/bugs.aspx elapsed milliseconds:0049
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 elapsed milliseconds:0004
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 2
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 elapsed milliseconds:0006
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 2
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:27:26 http://localhost/btnet/ajax.aspx?bugid=2 elapsed milliseconds:0017
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0004
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 33
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0006
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 33
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:28:07 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0017
+2015-11-26 09:33:44  caught exception in util.set_context:Request is not available in this context
+2015-11-26 09:33:44  threadproc_votes
+2015-11-26 09:33:44  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 09:33:44  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 09:33:44  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:33:44  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 09:33:44  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 09:33:44  elapsed milliseconds:0005
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0053
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 09:33:44  elapsed milliseconds:0070
+2015-11-26 09:33:44  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 09:33:44  elapsed milliseconds:0004
+2015-11-26 09:33:44  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 09:33:44  elapsed milliseconds:0018
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0119
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 33
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0011
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 33
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:33:44 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0017
+2015-11-26 09:33:44  done creating Lucene index
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0004
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 32
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0007
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 32
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:33:46 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0017
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0004
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 33
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0002
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 33
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:33:48 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0005
+2015-11-26 09:33:48 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 09:33:48 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0006
+2015-11-26 09:33:48 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 33
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0068
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+/* drop downs */ select pj_id, pj_name
+		from projects
+		left outer join project_user_xref on pj_id = pu_project
+		and pu_user = 10
+		where pj_active = 1
+		and isnull(pu_permission_level,2) not in (0, 1)
+		order by pj_name;
+select og_id, og_name from orgs where og_active = 1 order by og_name;
+select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+select st_id, st_name from statuses order by st_sort_seq, st_name;
+select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0015
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0017
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0005
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 33
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 09:33:49 http://localhost/btnet/edit_bug.aspx?id=33 elapsed milliseconds:0003
+2015-11-26 11:06:15  caught exception in util.set_context:Request is not available in this context
+2015-11-26 11:06:15  threadproc_votes
+2015-11-26 11:06:15  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 11:06:15  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:16  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 11:06:16  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 11:06:16  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 11:06:16  elapsed milliseconds:0006
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx elapsed milliseconds:0040
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 11:06:16  elapsed milliseconds:0057
+2015-11-26 11:06:16  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 11:06:16  elapsed milliseconds:0004
+2015-11-26 11:06:16  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 11:06:16  elapsed milliseconds:0024
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx elapsed milliseconds:0119
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx sql=
+/* query dropdown */
+select qu_id, qu_desc
+from queries
+where (isnull(qu_user,0) = 0 and isnull(qu_org,0) = 0)
+or isnull(qu_user,0) = 10
+or isnull(qu_org,0) = 2
+order by qu_desc
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx elapsed milliseconds:0006
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx sql=
+select qu_id, qu_sql from queries where qu_id in
+			(select us_default_query from users where us_id = 10)
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx elapsed milliseconds:0007
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx sql=
+select isnull(pr_background_color,'#ffffff'), bg_id [id], isnull(bu_flag,0) [$FLAG], 
+ bg_short_desc [desc], isnull(pj_name,'') [project], isnull(og_name,'') [organization], isnull(ct_name,'') [category], rpt.us_username [reported by],
+ bg_reported_date [reported on], isnull(pr_name,'') [priority], isnull(asg.us_username,'') [assigned to],
+ isnull(st_name,'') [status], isnull(lu.us_username,'') [last updated by], bg_last_updated_date [last updated on]
+ from bugs 
+ left outer join bug_user on bu_bug = bg_id and bu_user = 10 
+ left outer join users rpt on rpt.us_id = bg_reported_user
+ left outer join users asg on asg.us_id = bg_assigned_to_user
+ left outer join users lu on lu.us_id = bg_last_updated_user
+ left outer join projects on pj_id = bg_project
+ left outer join orgs on og_id = bg_org
+ left outer join categories on ct_id = bg_category
+ left outer join priorities on pr_id = bg_priority
+ left outer join statuses on st_id = bg_status
+ where /* altered - both  */ (  bg_status <> 5  ) AND (  (bugs.bg_project not in (
+					select pu_project
+					from project_user_xref
+					where pu_user = 10
+					and pu_permission_level = 0))  ) order by bg_id desc
+2015-11-26 11:06:16 http://localhost/btnet/bugs.aspx elapsed milliseconds:0043
+2015-11-26 11:06:16  done creating Lucene index
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0004
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 32
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0006
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 32
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:17 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0016
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 elapsed milliseconds:0004
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 31
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 elapsed milliseconds:0006
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 31
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:18 http://localhost/btnet/ajax.aspx?bugid=31 elapsed milliseconds:0017
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0009
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 32
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0002
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 32
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:28 http://localhost/btnet/ajax.aspx?bugid=32 elapsed milliseconds:0003
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 elapsed milliseconds:0004
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 29
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 elapsed milliseconds:0006
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 29
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=29 elapsed milliseconds:0016
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 elapsed milliseconds:0004
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 30
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 elapsed milliseconds:0006
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 30
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:32 http://localhost/btnet/ajax.aspx?bugid=30 elapsed milliseconds:0017
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0004
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 33
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0006
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 33
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 11:06:37 http://localhost/btnet/ajax.aspx?bugid=33 elapsed milliseconds:0017
+2015-11-26 14:26:21  caught exception in util.set_context:Request is not available in this context
+2015-11-26 14:26:21  threadproc_votes
+2015-11-26 14:26:21  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 14:26:21  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 14:26:21  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:26:21  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 14:26:21  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 14:26:21  elapsed milliseconds:0010
+2015-11-26 14:26:21  elapsed milliseconds:0064
+2015-11-26 14:26:21  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 14:26:21  elapsed milliseconds:0010
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0043
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 14:26:21  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 14:26:21  elapsed milliseconds:0030
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0118
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 15
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0006
+2015-11-26 14:26:21 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 15
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0018
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0005
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 15
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0003
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 15
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 14:26:22 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0004
+2015-11-26 14:26:22  done creating Lucene index
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0055
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+declare @bg_org int
+
+select isnull(pu_permission_level,2),
+bg_org
+from bugs
+left outer join project_user_xref
+on pu_project = bg_project
+and pu_user = 10
+where bg_id = 15
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0008
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 15
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 14:37:29 http://localhost/btnet/ajax.aspx?bugid=15 elapsed milliseconds:0020
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0006
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+/* drop downs */ select pj_id, pj_name
+		from projects
+		left outer join project_user_xref on pj_id = pu_project
+		and pu_user = 10
+		where pj_active = 1
+		and isnull(pu_permission_level,2) not in (0, 1)
+		order by pj_name;
+select og_id, og_name from orgs where og_active = 1 order by og_name;
+select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+select st_id, st_name from statuses order by st_sort_seq, st_name;
+select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0038
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+
+select top 1 pj_id from projects where pj_default = 1 order by pj_name;
+select top 1 ct_id from categories where ct_default = 1 order by ct_name;
+select top 1 pr_id from priorities where pr_default = 1 order by pr_name;
+select top 1 st_id from statuses where st_default = 1 order by st_name;
+select top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0014
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0016
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+select isnull(pj_default_user,0)
+					from projects
+					where pj_id = 1
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 14:37:31 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0005
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0005
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 0
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0048
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx sql=
+
+/* validate org versus assigned_to */
+select case when og_other_orgs_permission_level <> 0
+or 2 = og_id then 1
+else 0 end as [answer]
+from users
+inner join orgs on us_org = og_id
+where us_id = 10
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx sql=
+insert into bugs
+					(bg_short_desc,
+					bg_tags,
+					bg_reported_user,
+					bg_last_updated_user,
+					bg_reported_date,
+					bg_last_updated_date,
+					bg_project,
+					bg_org,
+					bg_category,
+					bg_priority,
+					bg_status,
+					bg_assigned_to_user,
+					bg_user_defined_attribute,
+					bg_project_custom_dropdown_value1,
+					bg_project_custom_dropdown_value2,
+					bg_project_custom_dropdown_value3
+					,[Puan],[Version])
+					values (N'Security', N'', 10,  10, getdate(), getdate(),
+					1, 2,
+					2, 2, 1, 10, 0,
+					N'',N'',N'' ,40,N'')
+select scope_identity()
+2015-11-26 14:37:57 http://localhost/btnet/edit_bug.aspx sql=
+
+declare @now datetime
+set @now = getdate()
+
+insert into bug_posts
+(bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_cc, bp_type, bp_content_type,
+bp_hidden_from_external_users)
+values(
+34,
+10,
+@now,
+N'PersonExtension
+-------------------
+PersonID
+LastLoginDate
+Password1
+Password2
+Password3
+PasswordChangeDate
+LoginTrial
+CustomField1
+CustomField2
+CustomField3
+
+
+LoginLog
+-------------------
+LogID
+Username
+Status
+Properties
+IP
+LogDate
+',
+N'PersonExtension
+-------------------
+PersonID
+LastLoginDate
+Password1
+Password2
+Password3
+PasswordChangeDate
+LoginTrial
+CustomField1
+CustomField2
+CustomField3
+
+
+LoginLog
+-------------------
+LogID
+Username
+Status
+Properties
+IP
+LogDate
+',
+null,
+N'',
+N'comment',
+N'text/plain',
+0)
+select scope_identity();
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx sql=
+
+declare @pj int
+select @pj = bg_project from bugs where bg_id = 34
+
+delete from bug_subscriptions
+where bs_bug = 34
+and bs_user in
+(select x.pu_user
+from projects
+left outer join project_user_xref x on pu_project = pj_id
+where pu_project = @pj
+and isnull(pu_permission_level,2) = 0)
+
+delete from bug_subscriptions
+where bs_bug = 34
+and bs_user in
+(select us_id from users
+ inner join orgs on us_org = og_id
+ inner join bugs on bg_id = 34
+ where og_other_orgs_permission_level = 0
+ and bg_org <> og_id)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 34, us_id
+from users
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 34
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where us_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 34)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 34, pj_default_user
+from projects
+inner join users on pj_default_user = us_id
+where pj_id = @pj
+and pj_default_user <> 0
+and pj_auto_subscribe_default_user = 1
+and us_active = 1
+and pj_default_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 34)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 34, pu_user from project_user_xref
+inner join users on pu_user = us_id
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 34
+where pu_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and pu_project = @pj
+and pu_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 34)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 34, us_id
+from users
+inner join bugs on bg_id = 34
+inner join orgs on us_org = og_id
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where ((us_auto_subscribe_own_bugs = 1 and bg_assigned_to_user = us_id)
+or
+(us_auto_subscribe_reported_bugs = 1 and bg_reported_user = us_id))
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 34)
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx sql=
+
+/* get notification emails for all subscribers */
+select us_email, us_id, us_admin, og.*
+from bug_subscriptions
+inner join users on bs_user = us_id
+inner join orgs og on us_org = og_id
+inner join bugs on bg_id = bs_bug
+left outer join project_user_xref on pu_user = us_id and pu_project = bg_project
+where us_email is not null
+and us_enable_notifications = 1
+-- $status_change
+and us_active = 1
+and us_email <> ''
+and (   (1 <= us_reported_notifications and bg_reported_user = bs_user)
+or (1 <= us_assigned_notifications and bg_assigned_to_user = bs_user)
+or (1 <= us_assigned_notifications and 0 = bs_user)
+or (1 <= us_subscribed_notifications))
+and
+case
+when
+us_org <> bg_org
+and og_other_orgs_permission_level < 2
+and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+	then og_other_orgs_permission_level
+else
+isnull(pu_permission_level,2)
+end <> 0
+and bs_bug = 34
+and (us_id <> 10 or isnull(us_send_notifications_to_self,0) = 1)
+2015-11-26 14:37:58  started updating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0032
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 34
+2015-11-26 14:37:58  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0049
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx sql=
+select
+					isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+					isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+					isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+					isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+					isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+					isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
+					from projects where pj_id = 1
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0004
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 34
+and a.bp_parent is null
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx elapsed milliseconds:0016
+2015-11-26 14:37:58  elapsed milliseconds:0076
+2015-11-26 14:37:58  sql=
+
+select bg_id, 
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc    
+from bugs where bg_id = 34
+2015-11-26 14:37:58  elapsed milliseconds:0025
+2015-11-26 14:37:58  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+and bp_bug = 34
+2015-11-26 14:37:58  elapsed milliseconds:0006
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0004
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 34
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0006
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+/* drop downs */ select pj_id, pj_name
+		from projects
+		left outer join project_user_xref on pj_id = pu_project
+		and pu_user = 10
+		where pj_active = 1
+		and isnull(pu_permission_level,2) not in (0, 1)
+		order by pj_name;
+select og_id, og_name from orgs where og_active = 1 order by og_name;
+select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+select st_id, st_name from statuses order by st_sort_seq, st_name;
+select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0003
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 14:37:58  done updating Lucene index
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0002
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0004
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 34
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 14:37:58 http://localhost/btnet/edit_bug.aspx?id=34 elapsed milliseconds:0019
+2015-11-26 14:38:58  actually_send_the_emails
+2015-11-26 14:38:58  sql=
+select * from queued_notifications where qn_status = N'not sent' and qn_retries < 3
+2015-11-26 14:38:58  elapsed milliseconds:0013
+2015-11-26 14:38:58  sending email to Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 14:38:58  to email addr: Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 14:38:58  There was a problem sending email.   Check settings in Web.config.
+2015-11-26 14:38:58  TO:Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 14:38:58  FROM:dont_reply@example.com
+2015-11-26 14:38:58  SUBJECT:Bug:34 was added - Security  (DO NOT EDIT THIS:34)
+2015-11-26 14:38:58  Could not find a part of the path 'C:\temp\pickup\2edc25d9-4250-40e5-94d6-5be3c61c9575.eml'.
+2015-11-26 14:38:58  sql=
+update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'Could not find a part of the path ''C:\temp\pickup\2edc25d9-4250-40e5-94d6-5be3c61c9575.eml''.' where qn_id = 77
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0054
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+/* drop downs */ select pj_id, pj_name
+		from projects
+		left outer join project_user_xref on pj_id = pu_project
+		and pu_user = 10
+		where pj_active = 1
+		and isnull(pu_permission_level,2) not in (0, 1)
+		order by pj_name;
+select og_id, og_name from orgs where og_active = 1 order by og_name;
+select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+select st_id, st_name from statuses order by st_sort_seq, st_name;
+select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0022
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+select top 1 pj_id from projects where pj_default = 1 order by pj_name;
+select top 1 ct_id from categories where ct_default = 1 order by ct_name;
+select top 1 pr_id from priorities where pr_default = 1 order by pr_name;
+select top 1 st_id from statuses where st_default = 1 order by st_name;
+select top 1 udf_id from user_defined_attribute where udf_default = 1 order by udf_name;
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0013
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0016
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+select isnull(pj_default_user,0)
+					from projects
+					where pj_id = 1
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 14:52:31 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0005
+2015-11-26 15:53:41  caught exception in util.set_context:Request is not available in this context
+2015-11-26 15:53:41  threadproc_votes
+2015-11-26 15:53:41  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 15:53:41  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 15:53:41  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 15:53:41  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 15:53:41  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 15:53:41  elapsed milliseconds:0006
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0045
+2015-11-26 15:53:41  elapsed milliseconds:0074
+2015-11-26 15:53:41  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 15:53:41  elapsed milliseconds:0005
+2015-11-26 15:53:41  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 15:53:41  elapsed milliseconds:0022
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0119
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 0
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0049
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* validate org versus assigned_to */
+select case when og_other_orgs_permission_level <> 0
+or 2 = og_id then 1
+else 0 end as [answer]
+from users
+inner join orgs on us_org = og_id
+where us_id = 10
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+insert into bugs
+					(bg_short_desc,
+					bg_tags,
+					bg_reported_user,
+					bg_last_updated_user,
+					bg_reported_date,
+					bg_last_updated_date,
+					bg_project,
+					bg_org,
+					bg_category,
+					bg_priority,
+					bg_status,
+					bg_assigned_to_user,
+					bg_user_defined_attribute,
+					bg_project_custom_dropdown_value1,
+					bg_project_custom_dropdown_value2,
+					bg_project_custom_dropdown_value3
+					,[Puan],[Version])
+					values (N'ING Bank Requirements', N'', 10,  10, getdate(), getdate(),
+					1, 2,
+					2, 3, 1, 10, 0,
+					N'',N'',N'' ,40,N'ING')
+select scope_identity()
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+declare @now datetime
+set @now = getdate()
+
+insert into bug_posts
+(bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_cc, bp_type, bp_content_type,
+bp_hidden_from_external_users)
+values(
+35,
+10,
+@now,
+N'6. Bankamızda çalışmakta olan Active Directory ile LDAP Entegrasyonu yapabilmesi – Single Sign On desteği gerekmektedir.
+14. Yetkili hesapların kullanım ve aksiyon loglarını tutabilmesi (log off,log on, deploy gibi…) gerekmektedir.
+15. Yetkisiz giriş denemelerinin loglanması ve belli bir deneme sonrası kullanıcı hesabının kilitlenmesi özelliklerine sahip olmalıdır.
+16. Uygulama loglarının silinmesi ve modifikasyonu durumunda log tutmalıdır.
+17. Hesap oluşturma ve silme işlemleri loglanmalıdır.
+18. Uygulama servislerinin kapanıp açılması veya hata alması durumlarının loglana bilmesi gerekmektedir.
+21. Tutulan bütün loglar tercihen veri tabanında tutulmalıdır.
+22. Yetkilendirmenin merkezi yapılabilmesi için Kimlik Yönetim aracımız olan IDM sistemi ile entegrasyon yapılabilmesi gerekmektedir. 
+31. Uygulamanın sağlık durumunun, çalışan servislerin ve işlemlerin izleneceği izleme ekranları olmalıdır bu ekranlar operasyon birimleri tarafından kullanılabilecek kadar basit olmalıdır.
+34. Uygulamanın Veri Tabanı ve kullanıcı ile iletişimi şifreli olmalıdır. (sertifika veya kullanılan veri tabanı client uygulaması vasıtası ile gerçekleştirilir)
+36. Gizliliği önemli olan bütün dosyalar ve kod parçaları uygun bir şekilde gizlenmiş/şifrelenmiş olmalıdır. Burada kullanıcı şifreleri açık bir şekilde saklanmamalı, ING standartlarına uygun olarak şifreli veya Hashli olarak tutulmalıdır
+',
+N'6. Bankamızda çalışmakta olan Active Directory ile LDAP Entegrasyonu yapabilmesi – Single Sign On desteği gerekmektedir.
+14. Yetkili hesapların kullanım ve aksiyon loglarını tutabilmesi (log off,log on, deploy gibi…) gerekmektedir.
+15. Yetkisiz giriş denemelerinin loglanması ve belli bir deneme sonrası kullanıcı hesabının kilitlenmesi özelliklerine sahip olmalıdır.
+16. Uygulama loglarının silinmesi ve modifikasyonu durumunda log tutmalıdır.
+17. Hesap oluşturma ve silme işlemleri loglanmalıdır.
+18. Uygulama servislerinin kapanıp açılması veya hata alması durumlarının loglana bilmesi gerekmektedir.
+21. Tutulan bütün loglar tercihen veri tabanında tutulmalıdır.
+22. Yetkilendirmenin merkezi yapılabilmesi için Kimlik Yönetim aracımız olan IDM sistemi ile entegrasyon yapılabilmesi gerekmektedir. 
+31. Uygulamanın sağlık durumunun, çalışan servislerin ve işlemlerin izleneceği izleme ekranları olmalıdır bu ekranlar operasyon birimleri tarafından kullanılabilecek kadar basit olmalıdır.
+34. Uygulamanın Veri Tabanı ve kullanıcı ile iletişimi şifreli olmalıdır. (sertifika veya kullanılan veri tabanı client uygulaması vasıtası ile gerçekleştirilir)
+36. Gizliliği önemli olan bütün dosyalar ve kod parçaları uygun bir şekilde gizlenmiş/şifrelenmiş olmalıdır. Burada kullanıcı şifreleri açık bir şekilde saklanmamalı, ING standartlarına uygun olarak şifreli veya Hashli olarak tutulmalıdır
+',
+null,
+N'',
+N'comment',
+N'text/plain',
+0)
+select scope_identity();
+2015-11-26 15:53:41  done creating Lucene index
+2015-11-26 15:53:41 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+declare @pj int
+select @pj = bg_project from bugs where bg_id = 35
+
+delete from bug_subscriptions
+where bs_bug = 35
+and bs_user in
+(select x.pu_user
+from projects
+left outer join project_user_xref x on pu_project = pj_id
+where pu_project = @pj
+and isnull(pu_permission_level,2) = 0)
+
+delete from bug_subscriptions
+where bs_bug = 35
+and bs_user in
+(select us_id from users
+ inner join orgs on us_org = og_id
+ inner join bugs on bg_id = 35
+ where og_other_orgs_permission_level = 0
+ and bg_org <> og_id)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, us_id
+from users
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 35
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where us_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, pj_default_user
+from projects
+inner join users on pj_default_user = us_id
+where pj_id = @pj
+and pj_default_user <> 0
+and pj_auto_subscribe_default_user = 1
+and us_active = 1
+and pj_default_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, pu_user from project_user_xref
+inner join users on pu_user = us_id
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 35
+where pu_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and pu_project = @pj
+and pu_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, us_id
+from users
+inner join bugs on bg_id = 35
+inner join orgs on us_org = og_id
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where ((us_auto_subscribe_own_bugs = 1 and bg_assigned_to_user = us_id)
+or
+(us_auto_subscribe_reported_bugs = 1 and bg_reported_user = us_id))
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* get notification emails for all subscribers */
+select us_email, us_id, us_admin, og.*
+from bug_subscriptions
+inner join users on bs_user = us_id
+inner join orgs og on us_org = og_id
+inner join bugs on bg_id = bs_bug
+left outer join project_user_xref on pu_user = us_id and pu_project = bg_project
+where us_email is not null
+and us_enable_notifications = 1
+-- $status_change
+and us_active = 1
+and us_email <> ''
+and (   (1 <= us_reported_notifications and bg_reported_user = bs_user)
+or (1 <= us_assigned_notifications and bg_assigned_to_user = bs_user)
+or (1 <= us_assigned_notifications and 0 = bs_user)
+or (1 <= us_subscribed_notifications))
+and
+case
+when
+us_org <> bg_org
+and og_other_orgs_permission_level < 2
+and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+	then og_other_orgs_permission_level
+else
+isnull(pu_permission_level,2)
+end <> 0
+and bs_bug = 35
+and (us_id <> 10 or isnull(us_send_notifications_to_self,0) = 1)
+2015-11-26 15:53:42  started updating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0028
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 35
+2015-11-26 15:53:42  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 15:53:42  elapsed milliseconds:0003
+2015-11-26 15:53:42  sql=
+
+select bg_id, 
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc    
+from bugs where bg_id = 35
+2015-11-26 15:53:42  elapsed milliseconds:0003
+2015-11-26 15:53:42  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+and bp_bug = 35
+2015-11-26 15:53:42  elapsed milliseconds:0007
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0048
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+select
+					isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+					isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+					isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+					isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+					isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+					isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
+					from projects where pj_id = 1
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0009
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 35
+and a.bp_parent is null
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 15:53:42  done updating Lucene index
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=0 elapsed milliseconds:0017
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0004
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 35
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0006
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+/* drop downs */ select pj_id, pj_name
+		from projects
+		left outer join project_user_xref on pj_id = pu_project
+		and pu_user = 10
+		where pj_active = 1
+		and isnull(pu_permission_level,2) not in (0, 1)
+		order by pj_name;
+select og_id, og_name from orgs where og_active = 1 order by og_name;
+select ct_id, ct_name from categories order by ct_sort_seq, ct_name;
+select pr_id, pr_name from priorities order by pr_sort_seq, pr_name;
+select st_id, st_name from statuses order by st_sort_seq, st_name;
+select udf_id, udf_name from user_defined_attribute order by udf_sort_seq, udf_name;
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0031
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0016
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0005
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 35
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 15:53:42 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0018
+2015-11-26 15:54:42  actually_send_the_emails
+2015-11-26 15:54:42  sql=
+select * from queued_notifications where qn_status = N'not sent' and qn_retries < 3
+2015-11-26 15:54:42  elapsed milliseconds:0021
+2015-11-26 15:54:42  sending email to Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  to email addr: Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  There was a problem sending email.   Check settings in Web.config.
+2015-11-26 15:54:42  TO:Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  FROM:dont_reply@example.com
+2015-11-26 15:54:42  SUBJECT:Bug:34 was added - Security  (DO NOT EDIT THIS:34)
+2015-11-26 15:54:42  Could not find a part of the path 'C:\temp\pickup\c30cc1cc-d602-4cc0-ad38-a6be0c5378cd.eml'.
+2015-11-26 15:54:42  sql=
+update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'Could not find a part of the path ''C:\temp\pickup\c30cc1cc-d602-4cc0-ad38-a6be0c5378cd.eml''.' where qn_id = 77
+2015-11-26 15:54:42  sending email to Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  to email addr: Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  There was a problem sending email.   Check settings in Web.config.
+2015-11-26 15:54:42  TO:Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 15:54:42  FROM:dont_reply@example.com
+2015-11-26 15:54:42  SUBJECT:Bug:35 was added - ING Bank Requirements  (DO NOT EDIT THIS:35)
+2015-11-26 15:54:42  Could not find a part of the path 'C:\temp\pickup\f685e539-32fc-44f0-8f6a-4e0d595b7ad8.eml'.
+2015-11-26 15:54:42  sql=
+update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'Could not find a part of the path ''C:\temp\pickup\f685e539-32fc-44f0-8f6a-4e0d595b7ad8.eml''.' where qn_id = 78
+2015-11-26 16:50:35  caught exception in util.set_context:Request is not available in this context
+2015-11-26 16:50:35  threadproc_votes
+2015-11-26 16:50:35  started creating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 16:50:35  sql=
+
+if exists (select * from dbo.sysobjects where id = object_id(N'[votes_view]'))
+drop view [votes_view]
+2015-11-26 16:50:35  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* check session */
+declare @project_admin int
+select @project_admin = count(1)
+	from sessions
+	inner join project_user_xref on pu_user = se_user
+	and pu_admin = 1
+	where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc';
+
+select us_id, us_admin,
+us_username, us_firstname, us_lastname,
+isnull(us_email,'') us_email,
+isnull(us_bugs_per_page,10) us_bugs_per_page,
+isnull(us_forced_project,0) us_forced_project,
+us_use_fckeditor,
+us_enable_bug_list_popups,
+og.*,
+isnull(us_forced_project, 0 ) us_forced_project,
+isnull(pu_permission_level, 2) pu_permission_level,
+@project_admin [project_admin]
+from sessions
+inner join users on se_user = us_id
+inner join orgs og on us_org = og_id
+left outer join project_user_xref
+	on pu_project = us_forced_project
+	and pu_user = us_id
+where se_id = 'e914407f-235b-491d-8c49-07a7213e0dcc'
+and us_active = 1
+2015-11-26 16:50:35  sql=
+
+create view votes_view as
+select bu_bug as vote_bug, sum(bu_vote) as vote_total
+from bug_user
+group by bu_bug
+having sum(bu_vote) > 0
+2015-11-26 16:50:35  sql=
+
+select bu_bug, count(1)
+from bug_user 
+where bu_vote = 1
+group by bu_bug
+2015-11-26 16:50:35  elapsed milliseconds:0005
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0043
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* custom columns */ select sc.name, st.[name] [datatype], 
+case when st.[name] = 'nvarchar' or st.[name] = 'nchar' then sc.length/2 else sc.length end as [length], 
+sc.xprec, sc.xscale, sc.isnullable,
+mm.text [default value], 
+dflts.name [default name], 
+isnull(ccm_dropdown_type,'') [dropdown type],
+isnull(ccm_dropdown_vals,'') [vals],
+isnull(ccm_sort_seq, sc.colorder) [column order],
+sc.colorder
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+left outer join syscomments mm on sc.cdefault = mm.id
+left outer join custom_col_metadata on ccm_colorder = sc.colorder
+left outer join sysobjects dflts on dflts.id = mm.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+order by sc.id, isnull(ccm_sort_seq,sc.colorder)
+2015-11-26 16:50:35  elapsed milliseconds:0072
+2015-11-26 16:50:35  sql=
+
+select bg_id, 	
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc
+from bugs
+2015-11-26 16:50:35  elapsed milliseconds:0005
+2015-11-26 16:50:35  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+2015-11-26 16:50:35  elapsed milliseconds:0023
+2015-11-26 16:50:35  done creating Lucene index
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0128
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 35
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0053
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* validate org versus assigned_to */
+select case when og_other_orgs_permission_level <> 0
+or 2 = og_id then 1
+else 0 end as [answer]
+from users
+inner join orgs on us_org = og_id
+where us_id = 10
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+declare @permission_level int
+		set @permission_level = -1
+		select @permission_level = isnull(pu_permission_level,2)
+		from project_user_xref
+		where pu_project = 1
+		and pu_user = 10
+		if @permission_level = -1 set @permission_level = 2
+		select @permission_level
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+declare @now datetime
+		declare @last_updated datetime
+		select @last_updated = bg_last_updated_date from bugs where bg_id = 35
+		if @last_updated > '20151126 15:55:31:233'
+		begin
+			-- signal that we did NOT do the update
+			set @now = '20151126 15:55:31:233'
+		end
+		else
+		begin
+			-- signal that we DID do the update
+			set @now = getdate()
+
+			update bugs set
+			bg_short_desc = N'ING Bank Requirements',
+			bg_tags = N'',
+			bg_project = 1,
+			bg_org = 2,
+			bg_category = 2,
+			bg_priority = 3,
+			bg_assigned_to_user = 10,
+			bg_status = 1,
+			bg_last_updated_user = 10,
+			bg_last_updated_date = @now,
+			bg_user_defined_attribute = 0
+            ,
+bg_project_custom_dropdown_value1 = N'',
+bg_project_custom_dropdown_value2 = N'',
+bg_project_custom_dropdown_value3 = N''
+	
+			,[Puan] = 40,[Version] = N'ING'
+			where bg_id = 35
+		end
+		select @now
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+declare @pj int
+select @pj = bg_project from bugs where bg_id = 35
+
+delete from bug_subscriptions
+where bs_bug = 35
+and bs_user in
+(select x.pu_user
+from projects
+left outer join project_user_xref x on pu_project = pj_id
+where pu_project = @pj
+and isnull(pu_permission_level,2) = 0)
+
+delete from bug_subscriptions
+where bs_bug = 35
+and bs_user in
+(select us_id from users
+ inner join orgs on us_org = og_id
+ inner join bugs on bg_id = 35
+ where og_other_orgs_permission_level = 0
+ and bg_org <> og_id)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, us_id
+from users
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 35
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where us_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, pj_default_user
+from projects
+inner join users on pj_default_user = us_id
+where pj_id = @pj
+and pj_default_user <> 0
+and pj_auto_subscribe_default_user = 1
+and us_active = 1
+and pj_default_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, pu_user from project_user_xref
+inner join users on pu_user = us_id
+inner join orgs on us_org = og_id
+inner join bugs on bg_id = 35
+where pu_auto_subscribe = 1
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and pu_project = @pj
+and pu_user not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+
+insert into bug_subscriptions (bs_bug, bs_user)
+select 35, us_id
+from users
+inner join bugs on bg_id = 35
+inner join orgs on us_org = og_id
+left outer join project_user_xref on pu_project = @pj and pu_user = us_id
+where ((us_auto_subscribe_own_bugs = 1 and bg_assigned_to_user = us_id)
+or
+(us_auto_subscribe_reported_bugs = 1 and bg_reported_user = us_id))
+and
+case
+	when
+		us_org <> bg_org
+		and og_other_orgs_permission_level < 2
+		and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+			then og_other_orgs_permission_level
+	else
+		isnull(pu_permission_level,2)
+end <> 0
+and us_active = 1
+and us_id not in
+(select bs_user from bug_subscriptions
+where bs_bug = 35)
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+select count(1) from bug_subscriptions where bs_bug = 35 and bs_user = 10
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+declare @now datetime
+set @now = getdate()
+
+insert into bug_posts
+(bp_bug, bp_user, bp_date, bp_comment, bp_comment_search, bp_email_from, bp_email_cc, bp_type, bp_content_type,
+bp_hidden_from_external_users)
+values(
+35,
+10,
+@now,
+N'Solution 34. https://msdn.microsoft.com/en-us/library/ms178372.aspx
+
+1.
+aspnet_regiis -pe "connectionStrings" -app "/Necaccess"
+
+C:\Windows\system32>aspnet_regiis -pe "connectionStrings" -app "/Necaccess"
+Microsoft (R) ASP.NET RegIIS version 4.0.30319.0
+Administration utility to install and uninstall ASP.NET on the local machine.
+Copyright (C) Microsoft Corporation.  All rights reserved.
+Encrypting configuration section...
+Succeeded!
+
+2.
+Response.Write(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
+NT AUTHORITY\NETWORK SERVICE 
+
+3.
+aspnet_regiis -pa "NetFrameworkConfigurationKey" "NT AUTHORITY\NETWORK SERVICE"
+
+C:\Windows\system32>aspnet_regiis -pa "NetFrameworkConfigurationKey" "NT AUTHORITY\NETWORK SERVICE"',
+N'Solution 34. https://msdn.microsoft.com/en-us/library/ms178372.aspx
+
+1.
+aspnet_regiis -pe "connectionStrings" -app "/Necaccess"
+
+C:\Windows\system32>aspnet_regiis -pe "connectionStrings" -app "/Necaccess"
+Microsoft (R) ASP.NET RegIIS version 4.0.30319.0
+Administration utility to install and uninstall ASP.NET on the local machine.
+Copyright (C) Microsoft Corporation.  All rights reserved.
+Encrypting configuration section...
+Succeeded!
+
+2.
+Response.Write(System.Security.Principal.WindowsIdentity.GetCurrent().Name);
+
+NT AUTHORITY\NETWORK SERVICE 
+
+3.
+aspnet_regiis -pa "NetFrameworkConfigurationKey" "NT AUTHORITY\NETWORK SERVICE"
+
+C:\Windows\system32>aspnet_regiis -pa "NetFrameworkConfigurationKey" "NT AUTHORITY\NETWORK SERVICE"',
+null,
+N'',
+N'comment',
+N'text/plain',
+0)
+select scope_identity();
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* get notification emails for all subscribers */
+select us_email, us_id, us_admin, og.*
+from bug_subscriptions
+inner join users on bs_user = us_id
+inner join orgs og on us_org = og_id
+inner join bugs on bg_id = bs_bug
+left outer join project_user_xref on pu_user = us_id and pu_project = bg_project
+where us_email is not null
+and us_enable_notifications = 1
+-- $status_change
+and us_active = 1
+and us_email <> ''
+and (   (4 <= us_reported_notifications and bg_reported_user = bs_user)
+or (4 <= us_assigned_notifications and bg_assigned_to_user = bs_user)
+or (4 <= us_assigned_notifications and 10 = bs_user)
+or (4 <= us_subscribed_notifications))
+and
+case
+when
+us_org <> bg_org
+and og_other_orgs_permission_level < 2
+and og_other_orgs_permission_level < isnull(pu_permission_level,2)
+	then og_other_orgs_permission_level
+else
+isnull(pu_permission_level,2)
+end <> 0
+and bs_bug = 35
+and (us_id <> 10 or isnull(us_send_notifications_to_self,0) = 1)
+2015-11-26 16:50:35  started updating Lucene index using folder C:\Users\Oisiktekiner\Desktop\Oktay\Dev\btnet364\www\App_Data\lucene_index
+2015-11-26 16:50:35  sql=
+
+/* get searchable cols */					
+select sc.name
+from syscolumns sc
+inner join systypes st on st.xusertype = sc.xusertype
+inner join sysobjects so on sc.id = so.id
+where so.name = 'bugs'
+and st.[name] <> 'sysname'
+and sc.name not in ('rowguid',
+'bg_id',
+'bg_short_desc',
+'bg_reported_user',
+'bg_reported_date',
+'bg_project',
+'bg_org',
+'bg_category',
+'bg_priority',
+'bg_status',
+'bg_assigned_to_user',
+'bg_last_updated_user',
+'bg_last_updated_date',
+'bg_user_defined_attribute',
+'bg_project_custom_dropdown_value1',
+'bg_project_custom_dropdown_value2',
+'bg_project_custom_dropdown_value3',
+'bg_tags')
+and st.[name] in ('nvarchar','varchar')
+and sc.length > 30
+2015-11-26 16:50:35  elapsed milliseconds:0002
+2015-11-26 16:50:35  sql=
+
+select bg_id, 
+[Version],
+isnull(bg_tags,'') bg_tags,
+bg_short_desc    
+from bugs where bg_id = 35
+2015-11-26 16:50:35  elapsed milliseconds:0003
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0025
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+ /* get_bug_datarow */
+declare @svn_revisions int
+declare @git_commits int
+declare @hg_revisions int
+declare @tasks int
+declare @related int;
+set @svn_revisions = 0
+set @git_commits = 0
+set @hg_revisions = 0
+set @tasks = 0
+set @related = 0
+
+select bg_id [id],
+bg_short_desc [short_desc],
+isnull(bg_tags,'') [bg_tags],
+isnull(ru.us_username,'[deleted user]') [reporter],
+isnull(ru.us_email,'') [reporter_email],
+case rtrim(ru.us_firstname)
+	when null then isnull(ru.us_lastname, '')
+	when '' then isnull(ru.us_lastname, '')
+	else isnull(ru.us_lastname + ', ' + ru.us_firstname,'')
+	end [reporter_fullname],
+bg_reported_date [reported_date],
+datediff(s,bg_reported_date,getdate()) [seconds_ago],
+isnull(lu.us_username,'') [last_updated_user],
+case rtrim(lu.us_firstname)
+	when null then isnull(lu.us_lastname, '')
+	when '' then isnull(lu.us_lastname, '')
+	else isnull(lu.us_lastname + ', ' + lu.us_firstname,'')
+	end [last_updated_fullname],
+
+
+bg_last_updated_date [last_updated_date],
+isnull(bg_project,0) [project],
+isnull(pj_name,'[no project]') [current_project],
+
+isnull(bg_org,0) [organization],
+isnull(bugorg.og_name,'') [og_name],
+
+isnull(bg_category,0) [category],
+isnull(ct_name,'') [category_name],
+
+isnull(bg_priority,0) [priority],
+isnull(pr_name,'') [priority_name],
+
+isnull(bg_status,0) [status],
+isnull(st_name,'') [status_name],
+
+isnull(bg_user_defined_attribute,0) [udf],
+isnull(udf_name,'') [udf_name],
+
+isnull(bg_assigned_to_user,0) [assigned_to_user],
+isnull(asg.us_username,'[not assigned]') [assigned_to_username],
+case rtrim(asg.us_firstname)
+when null then isnull(asg.us_lastname, '[not assigned]')
+when '' then isnull(asg.us_lastname, '[not assigned]')
+else isnull(asg.us_lastname + ', ' + asg.us_firstname,'[not assigned]')
+end [assigned_to_fullname],
+
+isnull(bs_user,0) [subscribed],
+
+case
+when
+	2 <> bg_org
+	and userorg.og_other_orgs_permission_level < 2
+	and userorg.og_other_orgs_permission_level < isnull(pu_permission_level,2)
+		then userorg.og_other_orgs_permission_level
+else
+	isnull(pu_permission_level,2)
+end [pu_permission_level],
+
+isnull(bg_project_custom_dropdown_value1,'') [bg_project_custom_dropdown_value1],
+isnull(bg_project_custom_dropdown_value2,'') [bg_project_custom_dropdown_value2],
+isnull(bg_project_custom_dropdown_value3,'') [bg_project_custom_dropdown_value3],
+@related [relationship_cnt],
+@svn_revisions [svn_revision_cnt],
+@git_commits [git_commit_cnt],
+@hg_revisions [hg_commit_cnt],
+@tasks [task_cnt],
+getdate() [snapshot_timestamp]
+,[Puan],[Version]
+from bugs
+inner join users this_user on us_id = 10
+inner join orgs userorg on this_user.us_org = userorg.og_id
+left outer join user_defined_attribute on bg_user_defined_attribute = udf_id
+left outer join projects on bg_project = pj_id
+left outer join orgs bugorg on bg_org = bugorg.og_id
+left outer join categories on bg_category = ct_id
+left outer join priorities on bg_priority = pr_id
+left outer join statuses on bg_status = st_id
+left outer join users asg on bg_assigned_to_user = asg.us_id
+left outer join users ru on bg_reported_user = ru.us_id
+left outer join users lu on bg_last_updated_user = lu.us_id
+left outer join bug_subscriptions on bs_bug = bg_id and bs_user = 10
+left outer join project_user_xref on pj_id = pu_project
+and pu_user = 10
+where bg_id = 35
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0006
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+select
+					isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+					isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+					isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+					isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+					isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+					isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3]
+					from projects where pj_id = 1
+2015-11-26 16:50:35  sql=
+
+select bp_bug, bp_id, 
+isnull(bp_comment_search,bp_comment) [text] 
+from bug_posts 
+where bp_type <> 'update'
+and bp_hidden_from_external_users = 0
+and bp_bug = 35
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0005
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 35
+and a.bp_parent is null
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 16:50:35  elapsed milliseconds:0007
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0018
+2015-11-26 16:50:35 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* users this project */ select us_id, case when 0 = 1 then us_lastname + ', ' + us_firstname else us_username end us_username
+from users
+inner join orgs on us_org = og_id
+where us_active = 1
+and og_can_be_assigned_to = 1
+and (2 <> 0 or 2 = og_id or (og_external_user = 0 and 1 = 1))
+and us_id not in
+	(select pu_user from project_user_xref
+		where pu_project = 1
+		and pu_permission_level = 0)
+order by us_username; 
+2015-11-26 16:50:36  done updating Lucene index
+2015-11-26 16:50:36 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0032
+2015-11-26 16:50:36 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+select
+			isnull(pj_enable_custom_dropdown1,0) [pj_enable_custom_dropdown1],
+			isnull(pj_enable_custom_dropdown2,0) [pj_enable_custom_dropdown2],
+			isnull(pj_enable_custom_dropdown3,0) [pj_enable_custom_dropdown3],
+			isnull(pj_custom_dropdown_label1,'') [pj_custom_dropdown_label1],
+			isnull(pj_custom_dropdown_label2,'') [pj_custom_dropdown_label2],
+			isnull(pj_custom_dropdown_label3,'') [pj_custom_dropdown_label3],
+			isnull(pj_custom_dropdown_values1,'') [pj_custom_dropdown_values1],
+			isnull(pj_custom_dropdown_values2,'') [pj_custom_dropdown_values2],
+			isnull(pj_custom_dropdown_values3,'') [pj_custom_dropdown_values3]
+			from projects where pj_id = 1
+2015-11-26 16:50:36 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0005
+2015-11-26 16:50:36 http://localhost/btnet/edit_bug.aspx?id=35 sql=
+
+/* get_bug_posts */
+select
+a.bp_bug,
+a.bp_comment,
+isnull(us_username,'') [us_username],
+case rtrim(us_firstname)
+	when null then isnull(us_lastname, '')
+	when '' then isnull(us_lastname, '')
+	else isnull(us_lastname + ', ' + us_firstname,'')
+	end [us_fullname],
+isnull(us_email,'') [us_email],
+a.bp_date,
+datediff(s,a.bp_date,getdate()) [seconds_ago],
+a.bp_id,
+a.bp_type,
+isnull(a.bp_email_from,'') bp_email_from,
+isnull(a.bp_email_to,'') bp_email_to,
+isnull(a.bp_email_cc,'') bp_email_cc,
+isnull(a.bp_file,'') bp_file,
+isnull(a.bp_size,0) bp_size,
+isnull(a.bp_content_type,'') bp_content_type,
+a.bp_hidden_from_external_users,
+isnull(ba.bp_file,'') ba_file,  -- intentionally ba
+isnull(ba.bp_id,'') ba_id, -- intentionally ba
+isnull(ba.bp_size,'') ba_size,  -- intentionally ba
+isnull(ba.bp_content_type,'') ba_content_type -- intentionally ba
+from bug_posts a
+left outer join users on us_id = a.bp_user
+left outer join bug_posts ba on ba.bp_parent = a.bp_id and ba.bp_bug = a.bp_bug
+where a.bp_bug = 35
+and a.bp_parent is null
+ and a.bp_type <> 'update'
+ order by a.bp_id desc, ba.bp_parent, ba.bp_id
+2015-11-26 16:50:36 http://localhost/btnet/edit_bug.aspx?id=35 elapsed milliseconds:0019
+2015-11-26 16:51:35  actually_send_the_emails
+2015-11-26 16:51:35  sql=
+select * from queued_notifications where qn_status = N'not sent' and qn_retries < 3
+2015-11-26 16:51:36  elapsed milliseconds:0021
+2015-11-26 16:51:36  sending email to Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  to email addr: Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  There was a problem sending email.   Check settings in Web.config.
+2015-11-26 16:51:36  TO:Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  FROM:dont_reply@example.com
+2015-11-26 16:51:36  SUBJECT:Bug:34 was added - Security  (DO NOT EDIT THIS:34)
+2015-11-26 16:51:36  Could not find a part of the path 'C:\temp\pickup\a1165308-3bd3-44b4-b72f-86ff8064a9c6.eml'.
+2015-11-26 16:51:36  sql=
+update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'Could not find a part of the path ''C:\temp\pickup\a1165308-3bd3-44b4-b72f-86ff8064a9c6.eml''.' where qn_id = 77
+2015-11-26 16:51:36  sending email to Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  to email addr: Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  There was a problem sending email.   Check settings in Web.config.
+2015-11-26 16:51:36  TO:Caner.Okcuoglu@EMEA.NEC.COM
+2015-11-26 16:51:36  FROM:dont_reply@example.com
+2015-11-26 16:51:36  SUBJECT:Bug:35 was updated - ING Bank Requirements  (DO NOT EDIT THIS:35)
+2015-11-26 16:51:36  Could not find a part of the path 'C:\temp\pickup\1f7b389f-b541-40db-95b7-c53bdeae2bb6.eml'.
+2015-11-26 16:51:36  sql=
+update queued_notifications  set qn_retries = qn_retries + 1, qn_last_exception = N'Could not find a part of the path ''C:\temp\pickup\1f7b389f-b541-40db-95b7-c53bdeae2bb6.eml''.' where qn_id = 79
