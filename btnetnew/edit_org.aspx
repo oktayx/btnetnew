@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -7,6 +7,13 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <title id="titl" runat="server">btnet edit org</title>
+
+    <script type="text/javascript">
+        //$(window).load(function () {
+        //    $("select").addClass("form-control");
+        //    $("input").addClass("form-control");
+        //});
+    </script>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -45,7 +52,7 @@
                 <td colspan="3">
                     <br>
                     <br>
-                    <div class="smallnote" style="width: 400px;">
+                    <div class="well smallnote">
                         Can members of this organization view/edit bugs associated with other organizations?<br>
                     </div>
                 </td>
@@ -66,6 +73,7 @@
             </tr>
 
         </table>
+
         <table class="table">
             <tr>
                 <td>
@@ -104,22 +112,14 @@
 
         </table>
 
-        <table border="0">
+        <table class="table">
 
 
             <tr>
                 <td colspan="3">
-                    <br>
-                    <br>
-                    <div class="smallnote" style="width: 400px;">
+                    <h2>
                         Field level permissions<br>
-                    </div>
-                </td>
-            </tr>
-
-
-            <tr>
-                <td colspan="3">&nbsp;
+                    </h2>
                 </td>
             </tr>
 
@@ -215,20 +215,21 @@
                 }
             %>
         </table>
-        <table border="0">
 
+        <table class="table">
             <tr>
-                <td colspan="3">
-                    <br>
-                    <br>
-                    <div class="smallnote" style="width: 400px;">
-                        Use the following settings to control permissions for non-admins.<br>
-                        Admins have all permissions regardless of these settings.<br>
-                    </div>
+                <td>
+                    <h2>
+                        Permissions for non-admins<br>
+                    </h2>
                 </td>
             </tr>
             <tr>
-                <td colspan="3">&nbsp;
+                <td colspan="3">
+                    <div class="well smallnote">
+                        Use the following settings to control permissions for non-admins.<br>
+                        Admins have all permissions regardless of these settings.<br>
+                    </div>
                 </td>
             </tr>
 
@@ -301,7 +302,7 @@
 
         </table>
 
-        <table border="0">
+        <table class="table">
 
             <tr>
                 <td colspan="2" align="left">
@@ -311,7 +312,7 @@
 
             <tr>
                 <td colspan="2" align="center">
-                    <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                    <input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit">
                     <td>&nbsp</td>
                 </td>
             </tr>

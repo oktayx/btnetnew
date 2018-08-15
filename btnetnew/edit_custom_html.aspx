@@ -1,4 +1,4 @@
-<%@ Page language="C#" MasterPageFile="~/btnet.Master"%>
+<%@ Page language="C#" MasterPageFile="~/btnetui.Master" ValidateRequest="false"%>
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections.Generic" %>
@@ -6,7 +6,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 <title id="titl" runat="server">btnet edit web config</title>
-<script language="Javascript" type="text/javascript" src="edit_area/edit_area_full.js"></script>
+<script type="text/javascript" src="edit_area/edit_area_full.js"></script>
 
 <script>
     editAreaLoader.init({
@@ -35,7 +35,7 @@
 <div class=align><table border=0 style="margin-left:20px; margin-top:20px; width:80%;"><tr><td>
 
 Select custom html file: 
-<select id="which" onchange="load_custom_file()" runat="server">
+<select id="which" class="form-control" onchange="load_custom_file()" runat="server">
 <option value="css">btnet_custom.css</option>
 <option value="footer">customer_footer.html</option>
 <option value="header">customer_header.html</option>
@@ -50,7 +50,7 @@ Select custom html file:
 
 <div class="err" id="msg" runat="server">&nbsp;</div>
 
-<div><input type=submit value="Save"  class="btn"></div>
+<div><input type=submit value="Save"  class="btn btn-info"></div>
 
 </table>
 </div>

@@ -398,5 +398,115 @@ function on_submit_search()
             
         }
 
+        public void write_menu3(HttpResponse Response, string this_link)
+        {
+
+            //These will be added to masterpage.load
+            Response.Write("<td width=20>&nbsp;</td>");
+            write_menu_item(Response, this_link, Util.get_setting("PluralBugLabel", "bugs"), "bugs.aspx");
+
+            if (user.can_search)
+            {
+                write_menu_item(Response, this_link, "search", "search.aspx");
+            }
+
+            if (Util.get_setting("EnableWhatsNewPage", "0") == "1")
+            {
+                write_menu_item(Response, this_link, "news", "view_whatsnew.aspx");
+            }
+
+            if (!user.is_guest)
+            {
+                write_menu_item(Response, this_link, "queries", "queries.aspx");
+            }
+
+            if (user.is_admin || user.can_use_reports || user.can_edit_reports)
+            {
+                write_menu_item(Response, this_link, "reports", "reports.aspx");
+            }
+
+            if (Util.get_setting("CustomMenuLinkLabel", "") != "")
+            {
+                write_menu_item(Response, this_link,
+                    Util.get_setting("CustomMenuLinkLabel", ""),
+                    Util.get_setting("CustomMenuLinkUrl", ""));
+            }
+
+            if (user.is_admin)
+            {
+                write_menu_item(Response, this_link, "admin", "admin.aspx");
+            }
+            else if (user.is_project_admin)
+            {
+                write_menu_item(Response, this_link, "users", "users.aspx");
+            }
+
+
+            // go to
+
+            Response.Write(goto_form);
+
+            // search
+            if (Util.get_setting("EnableLucene", "1") == "1" && user.can_search)
+            {
+                string query = (string)HttpContext.Current.Session["query"];
+                if (query == null)
+                {
+                    query = "";
+                }
+                string search_form = @"
+
+<td nowrap valign=middle>
+    <form style='margin: 0px; padding: 0px;' action=search_text.aspx method=get onsubmit='return on_submit_search()'>
+        <input class=menubtn type=submit value='search text'>
+        <input class=menuinput  id=lucene_input size=24 type=text class=txt
+        value='" + query.Replace("'", "") + @"' name=query accesskey=s>
+        <a href=lucene_syntax.html target=_blank style='font-size: 7pt;'>advanced</a>
+    </form>
+</td>";
+                //context.Session["query"] = null;
+                Response.Write(search_form);
+            }
+
+            Response.Write("<td nowrap valign=middle>");
+            if (user.is_guest && Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
+            {
+                Response.Write("<span class=smallnote>using as<br>");
+            }
+            else
+            {
+                Response.Write("<span class=smallnote>logged in as<br>");
+            }
+            Response.Write(user.username);
+            Response.Write("</span></td>");
+
+            if (auth_method == "plain")
+            {
+                if (user.is_guest && Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
+                {
+                    write_menu_item(Response, this_link, "login", "default.aspx");
+                }
+                else
+                {
+                    write_menu_item(Response, this_link, "logoff", "logoff.aspx");
+                }
+            }
+
+            // for guest account, suppress display of "edit_self
+            if (!user.is_guest)
+            {
+                write_menu_item(Response, this_link, "settings", "edit_self.aspx");
+            }
+
+
+            Response.Write("<td valign=middle align=left'>");
+            Response.Write("<a target=_blank href=about.html><span class='menu_item' style='margin-left:3px;'>about</span></a></td>");
+            Response.Write("<td nowrap valign=middle>");
+            Response.Write("<a target=_blank href=http://ifdefined.com/README.html><span class='menu_item' style='margin-left:3px;'>help</span></a></td>");
+
+            Response.Write("</tr></table><br>");
+        }
+
+
     } // end Security
 }

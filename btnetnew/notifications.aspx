@@ -1,4 +1,4 @@
-<%@ Page language="C#" MasterPageFile="~/btnet.Master"%>
+<%@ Page language="C#" MasterPageFile="~/btnetui.Master"%>
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections.Generic" %>
@@ -12,7 +12,7 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 <% security.write_menu2(Response, "admin"); %>
     
-<div style="width: 600px;" class=smallnote>
+<div style="width: 600px;" class="well smallnote">
 
 Email notifications are put into a table into the database and then the system attempts to send them.
 If the system fails to send the notification, it records the reason for the failure with the row.

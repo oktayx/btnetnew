@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -29,7 +29,6 @@
         function show_main_settings() {
             document.getElementById("tab1").style.display = "block";
             document.getElementById("tab2").style.display = "none";
-            document.getElementById("tab3").style.display = "none";
             document.getElementById("main_btn").setAttribute(cls, 'tab_btn_pushed');
             document.getElementById("custom_btn").setAttribute(cls, 'tab_btn');
         }
@@ -37,7 +36,6 @@
         function show_custom_field_settings() {
             document.getElementById("tab1").style.display = "none";
             document.getElementById("tab2").style.display = "block";
-            document.getElementById("tab3").style.display = "none";
             document.getElementById("main_btn").setAttribute(cls, 'tab_btn');
             document.getElementById("custom_btn").setAttribute(cls, 'tab_btn_pushed');
         }
@@ -269,7 +267,7 @@
         <tr>
             <td align="center">
                 <span runat="server" class="err" id="msg"></span>
-                <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit" />
+                <input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit" />
             </td>
         </tr>
     </table>

@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" ValidateRequest="false" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" ValidateRequest="false" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -29,7 +29,7 @@
         $(window).load(function () {
             on_body_load();
             $("select").addClass("form-control");
-            $("input").addClass("form-control");
+            //$("input").addClass("form-control");
         });
 
         $(window).unload(function () {
@@ -79,7 +79,7 @@
         <br>
         <br>
 
-        <table border="0" cellspacing="0" cellpadding="3">
+        <table class="table">
             <tr>
 
                 <td nowrap valign="top">
@@ -118,7 +118,7 @@
                                 <div style="text-align: center;">
                                     <input
                                         runat="server"
-                                        class="btn"
+                                        class="btn btn-info"
                                         type="submit"
                                         id="submit_button2"
                                         onclick="on_user_hit_submit()"
@@ -126,7 +126,7 @@
                                 </div>
                                 <% } %>
 
-                                <table border="0" cellpadding="3" cellspacing="0">
+                                <table class="table">
                                     <tr>
                                         <td nowrap valign="top">
                                             <span class="lbl" id="bugid_label" runat="server"></span>
@@ -138,7 +138,7 @@
             <span class="short_desc_static" id="static_short_desc" runat="server" style='width: 500px; display: none;'></span>
 
 
-            <input title="" runat="server" type="text" class="short_desc_input" id="short_desc" maxlength="200"
+            <input title="" runat="server" type="text" class="form-control" id="short_desc" maxlength="200"
                 onkeydown="count_chars('short_desc',200)" onkeyup="count_chars('short_desc',200)">
             &nbsp;&nbsp;&nbsp;
 				<span runat="server" class="err" id="short_desc_err"></span>
@@ -251,7 +251,7 @@
                                                 %>		
                                             </span>
                                             <br>
-                                            <textarea id="comment" rows="5" cols="100" runat="server" class="txt resizable2" onkeydown="mark_dirty()" onkeyup="mark_dirty()"></textarea>
+                                            <textarea id="comment" rows="5" runat="server" class="form-control resizable2" onkeydown="mark_dirty()" onkeyup="mark_dirty()"></textarea>
                                         <tr>
                                             <td nowrap>
                                                 <asp:CheckBox runat="server" class="cb" ID="internal_only" />
@@ -265,7 +265,7 @@
                                                     <td nowrap align="center">
                                                         <input
                                                             runat="server"
-                                                            class="btn"
+                                                            class="btn btn-info"
                                                             type="submit"
                                                             id="submit_button"
                                                             onclick="on_user_hit_submit()"

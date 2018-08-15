@@ -45,11 +45,28 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Highlighter.Net, Version=2.0.0.1, Culture=neutral">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Highlighter.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.0.30714, Culture=neutral, PublicKeyToken=b32731d11ce58905">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=2.4.0.2, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Lucene.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=1.0.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.1.0.3\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SharpMimeTools, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\SharpMimeTools.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.DirectoryServices.Protocols" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -91,7 +108,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Scripts\jquery-1.9.1.min.map" />
-    <Content Include="btnet.Master" />
+    <Content Include="btnetui.Master" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -674,31 +691,31 @@
     <Content Include="write_posts.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Code\authenticate.cs" />
-    <Content Include="App_Code\bug.cs" />
-    <Content Include="App_Code\bug_list.cs" />
-    <Content Include="App_Code\dbutil.cs" />
-    <Content Include="App_Code\email.cs" />
-    <Content Include="App_Code\my_lucene.cs" />
-    <Content Include="App_Code\my_mime.cs" />
-    <Content Include="App_Code\pop3.cs" />
-    <Content Include="App_Code\POP3Client.cs" />
-    <Content Include="App_Code\print_bug.cs" />
-    <Content Include="App_Code\security.cs" />
-    <Content Include="App_Code\sortable_html_table.cs" />
-    <Content Include="App_Code\tags.cs" />
-    <Content Include="App_Code\TranslationService.cs" />
-    <Content Include="App_Code\user.cs" />
-    <Content Include="App_Code\util.cs" />
-    <Content Include="App_Code\version_control.cs" />
-    <Content Include="App_Code\whatsnew.cs" />
-    <Content Include="App_Code\workflow.cs" />
-    <Compile Include="btnet.Master.cs">
-      <DependentUpon>btnet.Master</DependentUpon>
+    <Compile Include="AppCode\authenticate.cs" />
+    <Compile Include="AppCode\bug.cs" />
+    <Compile Include="AppCode\bug_list.cs" />
+    <Compile Include="AppCode\dbutil.cs" />
+    <Compile Include="AppCode\email.cs" />
+    <Compile Include="AppCode\my_lucene.cs" />
+    <Compile Include="AppCode\my_mime.cs" />
+    <Compile Include="AppCode\pop3.cs" />
+    <Compile Include="AppCode\POP3Client.cs" />
+    <Compile Include="AppCode\print_bug.cs" />
+    <Compile Include="AppCode\security.cs" />
+    <Compile Include="AppCode\sortable_html_table.cs" />
+    <Compile Include="AppCode\tags.cs" />
+    <Compile Include="AppCode\TranslationService.cs" />
+    <Compile Include="AppCode\user.cs" />
+    <Compile Include="AppCode\util.cs" />
+    <Compile Include="AppCode\version_control.cs" />
+    <Compile Include="AppCode\whatsnew.cs" />
+    <Compile Include="AppCode\workflow.cs" />
+    <Compile Include="btnetui.Master.cs">
+      <DependentUpon>btnetui.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="btnet.Master.designer.cs">
-      <DependentUpon>btnet.Master</DependentUpon>
+    <Compile Include="btnetui.Master.designer.cs">
+      <DependentUpon>btnetui.Master</DependentUpon>
     </Compile>
     <Compile Include="frm-with-master.aspx.cs">
       <DependentUpon>frm-with-master.aspx</DependentUpon>

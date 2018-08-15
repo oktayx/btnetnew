@@ -1,4 +1,4 @@
-<%@ Page language="C#" ValidateRequest="false" ClientIDMode="Static" MasterPageFile="~/btnet.Master" %>
+<%@ Page language="C#" ValidateRequest="false" ClientIDMode="Static" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>

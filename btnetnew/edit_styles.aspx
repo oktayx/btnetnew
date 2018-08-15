@@ -1,11 +1,11 @@
-<%@ Page language="C#"%>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
+
+<%@ Import Namespace="btnet" %>
+<%@ Import Namespace="System.Data" %>
+<%@ Import Namespace="System.Collections.Generic" %>
 <%@ Import Namespace="System.IO" %>
 
-<!--
-Copyright 2002-2011 Corey Trager
-Distributed under the terms of the GNU General Public License
--->
-<!-- #include file = "inc.aspx" -->
+
 
 <script language="C#" runat="server">
 
@@ -79,16 +79,19 @@ void Page_Load(Object sender, EventArgs e)
 
 </script>
 
-<html>
-<head>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <!--
+Copyright 2002-2011 Corey Trager
+Distributed under the terms of the GNU General Public License
+-->
+<!-- #include file = "inc.aspx" -->
+
 <title id="titl" runat="server">btnet styles</title>
-<link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="sortable.js"></script>
-</head>
+<script type="text/javascript" src="sortable.js"></script>
+</asp:Content>
 
-<body>
-<% security.write_menu(Response, "admin"); %>
-
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<% security.write_menu2(Response, "admin"); %>
 
 <div class=align>
 
@@ -97,17 +100,17 @@ The query "demo use of css classes" has as its first column a CSS class name tha
  composed of the priority's CSS class name concatenated with the status's CSS
  class name.  The SQL looks like this:
 </div>
-<p>
+<p></p>
+
 <div style="font-family: courier; font-weight: bold;">
 	select <span style="color: red;">isnull(pr_style + st_style,'datad')</span>, bg_id [id], bg_short_desc [desc], .... etc
 </div>
-<p>
-<div  class="lbl"  style="width: 600;">
+
+<div  class="well"  >
 Note that in the sql, where there isn't both a priority CSS class and a status CSS class
  available, the default CSS class name of "datad" is used.    The following list lets you see
  how all the different priority/status combinations will look.   Click on a link to edit
  a priority or a status.
-
 </div>
 
 <%
@@ -125,10 +128,10 @@ else
 
 %>
 
-<div cls="lbl">Relevant lines from btnet_custom.css:</div>
+<div class="lbl">Relevant lines from btnet_custom.css:</div>
 <div  class="frm" style="width: 600px;" id="relevant_lines" runat="server">
 </div>
 
 </div>
-<% Response.Write(Application["custom_footer"]); %></body>
-</html>
+    <% Response.Write(Application["custom_footer"]); %>
+</asp:Content>

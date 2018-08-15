@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -195,9 +195,7 @@
 
                             <tr>
                                 <td colspan="3">
-                                    <br>
-                                    <br>
-                                    <div class="well">
+                                    <div class="well smallnote">
                                         ADMIN - SEE "NotificationEmailEnabled", "NotificationEmailFrom", "SmtpServer" settings in Web.config.<br>
                                         <br>
                                         To receive email notifications when items are added or changed, fill in your email address, enable notifications, and then select "Auto-subscribe to all items" or the other options.<br>
@@ -215,9 +213,7 @@
 
                             <tr>
                                 <td colspan="3">
-                                    <br>
-                                    <br>
-                                    <div class="smallnote" style="width: 400px;">
+                                    <div class="well smallnote">
                                         You can AUTOMATICALLY subscribe to receive notifications to items by selecting either "Auto-subscribe to all items" or by selecting the other options.<br>
                                     </div>
                                 </td>
@@ -257,7 +253,7 @@
 
                             <tr>
                                 <td class="lbl">Apply subscription changes retroactively:</td>
-                                <td colspan="2">
+                                <td>
                                     <asp:CheckBox runat="server" class="cb" ID="retroactive" />&nbsp;&nbsp;
 	<span class="smallnote">Delete old subscriptions and create new ones, according to above settings.</span></td>
                                 <td>&nbsp;</td>
@@ -265,10 +261,8 @@
 
                             <tr>
                                 <td colspan="3">
-                                    <br>
-                                    <br>
-                                    <div class="smallnote" style="width: 400px;">
-                                        You can REDUCE or INCREASE the amount of email you receive by selecting the following.<br>
+                                    <div class="well smallnote">
+                                        You can REDUCE or INCREASE the amount of email you receive by selecting the following.
                                     </div>
                                 </td>
                             </tr>
@@ -336,9 +330,7 @@
 
                             <tr>
                                 <td colspan="3">
-                                    <br>
-                                    <br>
-                                    <div class="smallnote" style="width: 400px;">
+                                    <div class="well smallnote">
                                         If you have only given view permissions to this user, set the forced project to any of the view-only projects.<br>
                                     </div>
                                 </td>
@@ -409,7 +401,7 @@
                         <tr>
 
                             <td align="center">
-                                <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                                <input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit">
                             </td>
                             <td>&nbsp</td>
                         </tr>

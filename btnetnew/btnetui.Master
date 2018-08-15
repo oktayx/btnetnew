@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" ClientIDMode="Static" CodeBehind="btnet.master.cs" Inherits="btnet.btnet" %>
+﻿<%@ Master Language="C#" AutoEventWireup="true" ClientIDMode="Static" CodeBehind="btnetui.Master.cs" Inherits="btnet.btnetui" %>
 
 <!DOCTYPE html>
 
@@ -14,15 +14,44 @@
     <title id="titl" runat="server"></title>
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
     <link href="btnet.css" rel="stylesheet" />
-    
+
     <script src="Scripts/jquery-1.9.1.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
 
     <style type="text/css">
-        .contentTop{
+        .contentTop {
             margin-top: 70px;
         }
     </style>
+
+    <script type="text/javascript">
+
+        function gotoBug() {
+            var input = document.getElementById("txtBugId");
+            document.location = "/edit_bug.aspx?id=" + input.value;
+        }
+
+        function gotoSearch() {
+            var input = document.getElementById("txtSearch");
+            document.location = "/search_text.aspx?query=" + input.value;
+        }
+
+        function dbg(s) {
+            document.getElementById('debug').innerHTML += (s + '<br>')
+        }
+        function on_submit_search() {
+            el = document.getElementById('lucene_input')
+            if (el.value == '') {
+                alert('Enter the words you are search for.');
+                el.focus()
+                return false;
+            }
+            else {
+                return true;
+            }
+
+        }
+    </script>
 
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
@@ -40,26 +69,32 @@
                     </button>
 
                     <ul class="nav navbar-nav">
-                        <li><a href="<%: ResolveUrl("~/default.aspx")%>">
-                            <img style="margin-top: 0px;" runat="server" src="~/images/logo.png" width="115" height="35" /></a></li>
+                        <li>
+                            <asp:Literal ID="htmlLogo" runat="server"></asp:Literal>
+                        </li>
                         <li><a href="bugs.aspx">Bugs</a></li>
                         <li><a href="search.aspx">Search</a></li>
                         <li><a href="queries.aspx">Queries</a></li>
                         <li><a href="reports.aspx">Reports</a></li>
-                        <li><a href="admin.aspx">Admin</a></li>                        
+                        <li><a href="admin.aspx">Admin</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" id="navMenu4" role="button" aria-expanded="false" aria-haspopup="true" href="#" data-toggle="dropdown">Settings<span class="caret"></span></a>
 
-                            <ul class="dropdown-menu">
-                                <li style="display: inline-flex;">                                    
-                                    <a style="width: 100px;" href="edit_bug.aspx">Go to</a><input class="form-control input-sm" id="inputValue" style="width: 50%;" type="text" placeholder="ID">
-                                </li><li class="divider" role="separator"></li>
-                                <li style="display: inline-flex;">                                    
-                                    <a style="width: 100px;" href="search_text.aspx">Search</a><input class="form-control input-sm" id="inputValue2" style="width: 50%;" type="text" placeholder="Text">
+                            <ul class="dropdown-menu" style="width: 300px;">
+                                <li style="display: inline-flex;">
+                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoBug()">Go to</a><input class="form-control input-sm" id="txtBugId" style="width: 200px;" type="text" placeholder="ID">
                                 </li>
                                 <li class="divider" role="separator"></li>
+                                <li style="display: inline-flex;">
+                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoSearch()">Search</a><input class="form-control input-sm" id="txtSearch" style="width: 200px;" type="text" placeholder="Text">
+                                </li>
+                                <li class="divider" role="separator"></li>
+                                <li><a href="edit_self.aspx">Settings</a></li>
+                                <li class="divider" role="separator"></li>
+                                <li><a href="about.html">About</a></li>
+                                <li class="divider" role="separator"></li>
                                 <li class="dropdown-submenu">
-                                    <a id="help" href="#">Help</a>
+                                    <a id="help" href="readme.html">Help</a>
                                 </li>
                             </ul>
                         </li>
@@ -69,9 +104,6 @@
                     <ul class="nav navbar-nav navbar-right">
                         <li></li>
                         <li><a href="logoff.aspx">Logoff</a></li>
-                        <li><a href="edit_self.aspx">Settings</a></li>
-                        <li><a href="about.aspx">About</a></li>
-                        <li><a href="readme.html">Help</a></li>
                     </ul>
                 </div>
                 <!--/.nav-collapse -->

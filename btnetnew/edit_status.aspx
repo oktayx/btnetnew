@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -187,7 +187,7 @@ Distributed under the terms of the GNU General Public License
 
         <tr>
             <td colspan="3">
-                <span class="smallnote">Sort Sequence controls the sort order in the dropdowns.</span>
+                <div class="well smallnote">Sort Sequence controls the sort order in the dropdowns.</div>
             </td>
         </tr>
 
@@ -201,8 +201,8 @@ Distributed under the terms of the GNU General Public License
 
         <tr>
             <td colspan="3">
-                <span class="smallnote">CSS Class can be used to control the look of lists.<br>
-                    See the example queries.</span>
+                <div class="well smallnote">CSS Class can be used to control the look of lists.<br>
+                    See the example queries.</div>
             </td>
         </tr>
 
@@ -230,7 +230,7 @@ Distributed under the terms of the GNU General Public License
 
         <tr>
             <td colspan="2" align="center">
-                <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                <input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit">
                 <td>&nbsp</td>
             </td>
         </tr>

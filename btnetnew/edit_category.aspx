@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -54,7 +54,7 @@
 
 	<tr>
 	<td colspan=2 align=center>
-	<input runat="server" class=btn type=submit id="sub" value="Create or Edit">
+	<input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit">
 	
 	<td>&nbsp</td>
 	

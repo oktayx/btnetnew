@@ -375,11 +375,11 @@ namespace btnet
 
 			if (Util.get_setting("ForceBordersInEmails","0") == "1")
 			{
-				Response.Write ("\n<table id='posts_table' border=1 cellpadding=0 cellspacing=3>");
+				Response.Write ("\n<table id='posts_table' class='table table-bordered'>");
 			}
 			else
 			{
-				Response.Write ("\n<table id='posts_table' border=0 cellpadding=0 cellspacing=3>");
+				Response.Write ("\n<table id='posts_table' class='table'>");
 			}
 
 			int post_cnt = ds_posts.Tables[0].Rows.Count;

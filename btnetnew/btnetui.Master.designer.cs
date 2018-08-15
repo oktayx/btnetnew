@@ -10,7 +10,7 @@
 namespace btnet {
     
     
-    public partial class btnet {
+    public partial class btnetui {
         
         /// <summary>
         /// titl control.
@@ -38,6 +38,15 @@ namespace btnet {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm aspnetForm;
+        
+        /// <summary>
+        /// htmlLogo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal htmlLogo;
         
         /// <summary>
         /// ContentPlaceHolder1 control.

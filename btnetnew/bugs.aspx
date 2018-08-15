@@ -1,4 +1,4 @@
-<%@ Page Language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
 
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
@@ -23,7 +23,7 @@
             var frm = document.getElementById(asp_form_id);
             frm.actn.value = "query";
             frm.submit();
-        }
+        }        
 
     </script>
 
@@ -32,11 +32,11 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-    <% security.write_menu2(Response, Util.get_setting("PluralBugLabel", "bugs")); %>
+    <% //security.write_menu3(Response, Util.get_setting("PluralBugLabel", "bugs")); %>
 
     <div class="align">
 
-        <table class="table">
+        <table class="table1">
             <tr>
                 <td style="white-space:nowrap">
                     <% if (!security.user.adds_not_allowed)
@@ -90,9 +90,8 @@
 
 
 <script language="C#" runat="server">
-
-
-    Security security;
+    
+    btnet.Security security;
     string qu_id_string = null;
     string sql_error = "";
 
@@ -391,6 +390,12 @@ order by qu_desc";
         prev_sort.Value = prev_sort_val;
         prev_dir.Value = prev_dir_val;
 
+    }
+
+    void btnGoto_Click(Object sender, EventArgs e)
+    {
+        
+        Response.Redirect("http://localhost:49412/edit_bug.aspx?id=1");
     }
 
 </script>

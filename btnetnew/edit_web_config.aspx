@@ -1,4 +1,4 @@
-<%@ Page language="C#" MasterPageFile="~/btnet.Master"%>
+<%@ Page language="C#" MasterPageFile="~/btnetui.Master"%>
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections.Generic" %>
@@ -40,7 +40,7 @@
 
 <div class="err" id="msg" runat="server">&nbsp;</div>
 
-<div><input type=submit value="Save" class="btn">
+<div><input type=submit value="Save" class="btn btn-info">
     &nbsp;&nbsp;
     <span style="border: solid red 1px; padding: 2px; margin: 3px; color: red; font-size: 9px;">
     Be careful!  Web.config is easy to break!
@@ -100,8 +100,6 @@ void Page_Load(Object sender, EventArgs e)
             msg.InnerHtml = "ERROR:" + ex.Message;        
         }
     }
-
-    
 }
 
 </script>

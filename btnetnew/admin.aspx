@@ -1,4 +1,4 @@
-<%@ Page language="C#" MasterPageFile="~/btnet.Master" %>
+<%@ Page language="C#" MasterPageFile="~/btnetui.Master" %>
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
 <%@ Import Namespace="System.Collections.Generic" %>

@@ -79,7 +79,7 @@ namespace btnet
             }
 
             r.Write("<div id='myholder'>\n");
-            r.Write("<table id='mytable' class='table table-condensed'>\n"); //OKI. Changed class datat
+            r.Write("<table id='mytable' class='table table-bordered'>\n"); //OKI. Changed class datat
 
         }
 
