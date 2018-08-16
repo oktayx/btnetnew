@@ -93,7 +93,7 @@ Distributed under the terms of the GNU General Public License
 
     <script>
         function submit_form() {
-            var frm = document.getElementById("frm");
+            var frm = document.forms[0];
             frm.submit();
             return true;
         }

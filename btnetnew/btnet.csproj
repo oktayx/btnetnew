@@ -84,7 +84,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\lucene_index\segments.gen" />
-    <Content Include="App_Data\lucene_index\segments_3c" />
     <Content Include="btnet_css_for_email.css.renamed" />
     <Content Include="ckeditor\.htaccess" />
     <Content Include="ckeditor\ckeditor.pack" />
@@ -95,6 +94,7 @@
     <Content Include="edit_area\edit_area_full.gz" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="frm-with-master.aspx" />
+    <Content Include="images\logo.png" />
     <Content Include="jquery\jquery-ui.min.css" />
     <Content Include="jquery\jquery-ui.min.js" />
     <Content Include="obj\Debug\CoreCompileInputs.cache" />
@@ -109,6 +109,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff2" />
     <Content Include="Scripts\jquery-1.9.1.min.map" />
     <Content Include="btnetui.Master" />
+    <None Include="Properties\PublishProfiles\CustomProfile.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -126,22 +127,6 @@
     <Content Include="ajax.aspx" />
     <Content Include="ajax2.aspx" />
     <Content Include="apache_license.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_01_14.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_04_20.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_11_25.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_11_26.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_11_27.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_07.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_08.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_09.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_14.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_18.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_22.txt" />
-    <Content Include="App_Data\logs\btnet_log_2015_12_25.txt" />
-    <Content Include="App_Data\logs\btnet_log_2016_01_06.txt" />
-    <Content Include="App_Data\logs\btnet_log_2016_01_08.txt" />
-    <Content Include="App_Data\logs\btnet_log_2017_06_22.txt" />
-    <Content Include="App_Data\logs\btnet_log_2017_07_25.txt" />
     <Content Include="arrow_down.png" />
     <Content Include="arrow_up.png" />
     <Content Include="attach.gif" />
@@ -150,7 +135,6 @@
     <Content Include="bin\log4net.dll" />
     <Content Include="bin\Lucene.Net.dll" />
     <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll" />
-    <Content Include="bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml" />
     <Content Include="bin\SharpMimeTools.dll" />
     <Content Include="brick.png" />
     <Content Include="btnet.css" />
@@ -730,8 +714,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\logs\" />
     <Folder Include="App_Data\uploads\" />
-    <Folder Include="images\" />
     <Folder Include="obj\Debug\TempPE\" />
     <Folder Include="packages\" />
   </ItemGroup>
