@@ -9,6 +9,8 @@ There are settigs in **web.config** file. I already opened tasks and html editor
 
 **Default username/password** is admin.
 
+![alt text](http://napptune.com/temp/img/bugs.png "Bugs")
+
 After conversion I didn't check all pages for functionality. **It needs testing** for permissions and functions.
 
 *Implementation is still ongoing. Follow issues.*
