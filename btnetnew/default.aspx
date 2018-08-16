@@ -176,6 +176,8 @@ Distributed under the terms of the GNU General Public License
 
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
     <title id="titl" runat="server">btnet logon</title>
     <link rel="StyleSheet" href="btnet.css" type="text/css">
     <link rel="shortcut icon" href="favicon.ico">
@@ -194,65 +196,65 @@ Distributed under the terms of the GNU General Public License
 
             %>
     </table>
+    <div class="container-fluid" align="center" style="width: 400px;">
 
-    <form class="frm1" runat="server">
+        <form class="frm1" runat="server">
 
-        <div class="container-fluid" align="center" style="width:400px;">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title"><strong>Login </strong></h3>
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title"><strong>Login </strong></h3>
+                </div>
+                <div class="panel-body">
+                    <div>
+                        <label for="txtUsername">Username</label>
+                        <input runat="server" type="text" class="form-control" id="user">
+                    </div>
+                    <br />
+                    <div>
+                        <label for="txtPassword">Password</label>
+                        <input runat="server" type="password" class="form-control" id="pw">
+                    </div>
+
+                    <div style="padding: 10px 0px 0px;">
+                        <input class="btn btn-primary" type="submit" value="Logon" runat="server" style="width: 150px;">
+                    </div>
+                    <span runat="server" class="err" id="msg">&nbsp;</span>
+                </div>
             </div>
-            <div class="panel-body">
-                <div>
-                    <label for="txtUsername">Username</label>
-                    <input runat="server" type="text" class="form-control" id="user">
-                </div>
-                <br />
-                <div>
-                    <label for="txtPassword">Password</label>
-                    <input runat="server" type="password" class="form-control" id="pw">
-                </div>
 
-                <div style="padding: 10px 0px 0px;">
-                    <input class="btn btn-primary" type="submit" value="Logon" runat="server" Style="width: 150px;">
-                </div>
-                <span runat="server" class="err" id="msg">&nbsp;</span>
+            <div align="center">
+                <table class="table">
+                    <tr>
+                        <td>
+                            <span>
+
+                                <% if (Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
+                                    { %>
+                                <p>
+                                    <a style="font-size: 8pt;" href="bugs.aspx">Continue as "guest" without logging in</a>
+                                <p>
+                                    <% } %>
+
+                                    <% if (Util.get_setting("AllowSelfRegistration", "0") == "1")
+                                        { %>
+                                <p>
+                                    <a style="font-size: 8pt;" href="register.aspx">Register</a>
+                                <p>
+                                    <% } %>
+
+                                    <% if (Util.get_setting("ShowForgotPasswordLink", "1") == "1")
+                                        { %>
+                                <p>
+                                    <a style="font-size: 8pt;" href="forgot.aspx">Forgot your username or password?</a>
+                                <p>
+                                    <% } %>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
             </div>
-        </div>
-        </div>
-
-        <div align="center">
-            <table border="0">
-                <tr>
-                    <td>
-                        <span>
-
-                            <% if (Util.get_setting("AllowGuestWithoutLogin", "0") == "1")
-                                { %>
-                            <p>
-                                <a style="font-size: 8pt;" href="bugs.aspx">Continue as "guest" without logging in</a>
-                            <p>
-                                <% } %>
-
-                                <% if (Util.get_setting("AllowSelfRegistration", "0") == "1")
-                                    { %>
-                            <p>
-                                <a style="font-size: 8pt;" href="register.aspx">Register</a>
-                            <p>
-                                <% } %>
-
-                                <% if (Util.get_setting("ShowForgotPasswordLink", "1") == "1")
-                                    { %>
-                            <p>
-                                <a style="font-size: 8pt;" href="forgot.aspx">Forgot your username or password?</a>
-                            <p>
-                                <% } %>
-                        </span>
-                    </td>
-                </tr>
-            </table>
+        </form>
     </div>
-    </form>
 
     <% Response.Write(Application["custom_welcome"]); %>
 </body>
