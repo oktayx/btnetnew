@@ -1114,9 +1114,7 @@ void write_custom_date_controls(string name)
 </script>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
-    <link rel="shortcut icon" href="favicon.ico">
     <title id="titl" runat="server">btnet bugs</title>
-    <link rel="StyleSheet" href="btnet.css" type="text/css">
     <link href="jquery/jquery-ui.min.css" rel="stylesheet" />
 
 <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on search.aspx  -->

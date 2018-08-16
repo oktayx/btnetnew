@@ -82,15 +82,15 @@ void Page_Load(Object sender, EventArgs e)
 <head>
 <title id="titl" runat="server">btnet delete task</title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
+    <link href="Content/bootstrap.min.css" rel="stylesheet" />
 </head>
 <body>
-<p>
+
 <div class=align>
-	<p>&nbsp</p>
 
 	<a id="back_href" runat="server" href="">back to tasks</a>
 
-	<p>or<p>
+	<p>or</p>
 
 	<script>
 	function submit_form()
@@ -102,11 +102,12 @@ void Page_Load(Object sender, EventArgs e)
 
 	</script>
 	<form runat="server" id="frm">
-	<a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
+	<a id="confirm_href" class="btn btn-danger" runat="server" href="javascript: submit_form()"></a>
 	</form>
 
 
 </div>
+    </body>
 </html>
 
 

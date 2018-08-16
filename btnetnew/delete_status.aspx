@@ -1,9 +1,5 @@
-<%@ Page language="C#"%>
-<!--
-Copyright 2002-2011 Corey Trager
-Distributed under the terms of the GNU General Public License
--->
-<!-- #include file = "inc.aspx" -->
+<%@ Page language="C#" MasterPageFile="~/btnetui.Master"%>
+
 
 <script language="C#" runat="server">
 
@@ -67,36 +63,36 @@ void Page_Load(Object sender, EventArgs e)
 
 </script>
 
-<html>
-<head>
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <!--
+Copyright 2002-2011 Corey Trager
+Distributed under the terms of the GNU General Public License
+-->
+<!-- #include file = "inc.aspx" -->
 <title id="titl" runat="server">btnet delete status</title>
-<link rel="StyleSheet" href="btnet.css" type="text/css">
-</head>
-<body>
-<% security.write_menu(Response, "admin"); %>
-<p>
-<div class=align>
-<p>&nbsp</p>
+</asp:Content>
+
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+<% security.write_menu2(Response, "admin"); %>
 <a href=statuses.aspx>back to statuses</a>
 
-<p>or<p>
+<p>or</p>
 
 <script>
 function submit_form()
 {
-    var frm = document.getElementById("frm");
+    var frm = document.forms[0];
     frm.submit();
     return true;
 }
 
 </script>
-<form runat="server" id="frm">
-<a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
-<input type="hidden" id="row_id" runat="server">
-</form>
 
-</div>
-<% Response.Write(Application["custom_footer"]); %></body>
-</html>
+<a id="confirm_href" class="btn btn-danger" runat="server" href="javascript: submit_form()"></a>
+<input type="hidden" id="row_id" runat="server">
+
+<% Response.Write(Application["custom_footer"]); %>
+
+</asp:Content>
 
 

@@ -1,4 +1,6 @@
 <%@ Page language="C#"%>
+<%@ Import Namespace="btnet" %>
+
 <!--
 Copyright 2002-2011 Corey Trager
 Distributed under the terms of the GNU General Public License
@@ -6,9 +8,6 @@ Distributed under the terms of the GNU General Public License
 <!-- #include file = "inc.aspx" -->
 
 <script language="C#" runat="server">
-
-
-
 
 ///////////////////////////////////////////////////////////////////////
 void Page_Load(Object sender, EventArgs e)
@@ -18,7 +17,6 @@ void Page_Load(Object sender, EventArgs e)
 	Util.do_not_cache(Response);
 
 	
-
 	string guid = Request["id"];
 
 	string sql = @"
@@ -48,7 +46,7 @@ delete from emailed_links
 	}
 	else
 	{
-		User.copy_user(
+		btnet.User.copy_user(
 			(string) dr["el_username"],
 			(string) dr["el_email"],
 			(string) dr["el_firstname"],

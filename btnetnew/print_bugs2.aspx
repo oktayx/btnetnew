@@ -7,9 +7,7 @@ Distributed under the terms of the GNU General Public License
 
 <script language="C#" runat="server">
 
-
 String sql;
-
 
 Security security;
 DataSet ds = null;
@@ -35,7 +33,6 @@ void Page_Load(Object sender, EventArgs e)
 
 	if (qu_id_string != null)
 	{
-
 		// use sql specified in query string
 		int qu_id = Convert.ToInt32(qu_id_string);
 		sql = @"select qu_sql from queries where qu_id = $1";
@@ -75,7 +72,6 @@ void Page_Load(Object sender, EventArgs e)
     }
 
 }
-
 
 </script>
 
@@ -134,8 +130,9 @@ else
 				firstrow = false;
 			}
 
+            //OKI: Fix. dr2[1] to dr2["bg_id"]
 			DataRow dr = Bug.get_bug_datarow(
-				(int)dr2[1],
+				(int)dr2["bg_id"],
 				security);
 
 			PrintBug.print_bug(Response, dr, security, 

@@ -1,22 +1,17 @@
 <%@ Page language="C#" MasterPageFile="~/btnetui.Master"%>
 <%@ Import Namespace="btnet" %>
 <%@ Import Namespace="System.Data" %>
-<%@ Import Namespace="System.Collections.Generic" %>
 
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 <title id="titl" runat="server">btnet delete report</title>
-<link rel="StyleSheet" href="btnet.css" type="text/css">
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 <% security.write_menu2(Response, "reports"); %>
-<p>
-<div class=align>
-<p>&nbsp</p>
 <a href=reports.aspx>Back to reports</a>
 
-<p>or<p>
+<p>or</p>
 
 <script>
 function submit_form()
@@ -27,10 +22,9 @@ function submit_form()
 }
 
 </script>
-<a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
+<a id="confirm_href" class="btn btn-danger" runat="server" href="javascript: submit_form()"></a>
 <input type="hidden" id="row_id" runat="server">
 
-</div>
 <% Response.Write(Application["custom_footer"]); %>
 
 </asp:Content>

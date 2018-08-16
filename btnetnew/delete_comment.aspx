@@ -1,122 +1,114 @@
-<%@ Page language="C#"%>
-<!--
-Copyright 2002-2011 Corey Trager
-Distributed under the terms of the GNU General Public License
--->
-<!-- #include file = "inc.aspx" -->
+<%@ Page Language="C#" MasterPageFile="~/btnetui.Master" %>
+
 
 <script language="C#" runat="server">
 
 
-String sql;
+    String sql;
 
-Security security;
+    Security security;
 
-void Page_Init (object sender, EventArgs e) {ViewStateUserKey = Session.SessionID;}
+    void Page_Init(object sender, EventArgs e) { ViewStateUserKey = Session.SessionID; }
 
-///////////////////////////////////////////////////////////////////////
-void Page_Load(Object sender, EventArgs e)
-{
+    ///////////////////////////////////////////////////////////////////////
+    void Page_Load(Object sender, EventArgs e)
+    {
 
-	Util.do_not_cache(Response);
-	
-	security = new Security();
+        Util.do_not_cache(Response);
 
-	security.check_security( HttpContext.Current, Security.ANY_USER_OK_EXCEPT_GUEST);
+        security = new Security();
 
-	if (security.user.is_admin || security.user.can_edit_and_delete_posts)
-	{
-		//
-	}
-	else
-	{
-		Response.Write ("You are not allowed to use this page.");
-		Response.End();
-	}
+        security.check_security(HttpContext.Current, Security.ANY_USER_OK_EXCEPT_GUEST);
 
-	if (IsPostBack)
-	{
-		// do delete here
+        if (security.user.is_admin || security.user.can_edit_and_delete_posts)
+        {
+            //
+        }
+        else
+        {
+            Response.Write("You are not allowed to use this page.");
+            Response.End();
+        }
 
-		sql = @"delete bug_posts where bp_id = $1";
-        sql = sql.Replace("$1", Util.sanitize_integer(row_id.Value));
-		DbUtil.execute_nonquery(sql);
-		Response.Redirect ("edit_bug.aspx?id=" + Util.sanitize_integer(redirect_bugid.Value));
-	}
-	else
-	{
+        if (IsPostBack)
+        {
+            // do delete here
 
-		string bug_id = Util.sanitize_integer(Request["bug_id"]);
-		redirect_bugid.Value = bug_id;
+            sql = @"delete bug_posts where bp_id = $1";
+            sql = sql.Replace("$1", Util.sanitize_integer(row_id.Value));
+            DbUtil.execute_nonquery(sql);
+            Response.Redirect("edit_bug.aspx?id=" + Util.sanitize_integer(redirect_bugid.Value));
+        }
+        else
+        {
 
-		int permission_level = Bug.get_bug_permission_level(Convert.ToInt32(bug_id), security);
-		if (permission_level != Security.PERMISSION_ALL)
-		{
-			Response.Write("You are not allowed to edit this item");
-			Response.End();
-		}
+            string bug_id = Util.sanitize_integer(Request["bug_id"]);
+            redirect_bugid.Value = bug_id;
 
-		titl.InnerText = Util.get_setting("AppTitle","BugTracker.NET") + " - "
-			+ "delete comment";
+            int permission_level = Bug.get_bug_permission_level(Convert.ToInt32(bug_id), security);
+            if (permission_level != Security.PERMISSION_ALL)
+            {
+                Response.Write("You are not allowed to edit this item");
+                Response.End();
+            }
 
-		string id = Util.sanitize_integer(Request["id"]);
+            titl.InnerText = Util.get_setting("AppTitle", "BugTracker.NET") + " - "
+                + "delete comment";
 
-		back_href.HRef = "edit_bug.aspx?id=" + bug_id;
+            string id = Util.sanitize_integer(Request["id"]);
 
-		sql = @"select bp_comment from bug_posts where bp_id = $1";
-		sql = sql.Replace("$1", id);
+            back_href.HRef = "edit_bug.aspx?id=" + bug_id;
 
-		DataRow dr = DbUtil.get_datarow(sql);
+            sql = @"select bp_comment from bug_posts where bp_id = $1";
+            sql = sql.Replace("$1", id);
 
-		// show the first few chars of the comment
-		string s = Convert.ToString(dr["bp_comment"]);
-		int len = 20;
-		if (s.Length < len) {len = s.Length;}
+            DataRow dr = DbUtil.get_datarow(sql);
 
-		confirm_href.InnerText = "confirm delete of comment: "
-				+ s.Substring(0,len)
-				+ "...";
+            // show the first few chars of the comment
+            string s = Convert.ToString(dr["bp_comment"]);
+            int len = 20;
+            if (s.Length < len) { len = s.Length; }
 
-		row_id.Value = id;
-	}
+            confirm_href.InnerText = "confirm delete of comment: "
+                    + s.Substring(0, len)
+                    + "...";
+
+            row_id.Value = id;
+        }
 
 
-}
-
-</script>
-
-<html>
-<head>
-<title id="titl" runat="server">btnet edit attachment</title>
-<link rel="StyleSheet" href="btnet.css" type="text/css">
-</head>
-<body>
-<% security.write_menu(Response, Util.get_setting("PluralBugLabel","bugs")); %>
-<p>
-<div class=align>
-<p>&nbsp</p>
-<a id="back_href" runat="server" href="">back to <% Response.Write(Util.get_setting("SingularBugLabel","bug")); %></a>
-
-<p>or<p>
-
-<script>
-function submit_form()
-{
-    var frm = document.getElementById("frm");
-    frm.submit();
-    return true;
-}
+    }
 
 </script>
-<form runat="server" id="frm">
-<a id="confirm_href" runat="server" href="javascript: submit_form()"></a>
-<input type="hidden" id="row_id" runat="server">
-<input type="hidden" id="redirect_bugid" runat="server">
-</form>
 
+<asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <!--
+Copyright 2002-2011 Corey Trager
+Distributed under the terms of the GNU General Public License
+-->
+    <!-- #include file = "inc.aspx" -->
+    <title id="titl" runat="server">btnet edit attachment</title>
+</asp:Content>
 
-</div>
-<% Response.Write(Application["custom_footer"]); %></body>
-</html>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
+    <% security.write_menu2(Response, Util.get_setting("PluralBugLabel", "bugs")); %>
+    <a id="back_href" runat="server" href="">back to <% Response.Write(Util.get_setting("SingularBugLabel", "bug")); %></a>
+
+    <p>or</p>
+
+    <script>
+        function submit_form() {
+            var frm = document.forms[0];
+            frm.submit();
+            return true;
+        }
+
+    </script>
+    <a id="confirm_href" class="btn btn-danger" runat="server" href="javascript: submit_form()"></a>
+    <input type="hidden" id="row_id" runat="server">
+    <input type="hidden" id="redirect_bugid" runat="server">
+
+    <% Response.Write(Application["custom_footer"]); %>
+</asp:Content>
 
 

@@ -7,7 +7,6 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <link rel="shortcut icon" href="favicon.ico">
     <title id="titl" runat="server">btnet bugs</title>
-    <link rel="StyleSheet" href="btnet.css" type="text/css">
     <script type="text/javascript" src="bug_list.js"></script>
 
 

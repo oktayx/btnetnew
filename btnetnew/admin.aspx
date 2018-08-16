@@ -5,7 +5,6 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 <title id="titl" runat="server">btnet admin</title>
-<link rel="StyleSheet" href="btnet.css" type="text/css">
 <script>
 
 var nagspan

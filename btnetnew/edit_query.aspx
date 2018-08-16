@@ -417,7 +417,7 @@ select us_id, us_username from users order by us_username";
 
         <tr>
             <td colspan="2" style="text-align:center;">
-                <input runat="server" class="btn" type="submit" id="sub" value="Create or Edit">
+                <input runat="server" class="btn btn-info" type="submit" id="sub" value="Create or Edit">
             </td>
             <td>&nbsp</td>
         </tr>
