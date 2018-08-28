@@ -19,8 +19,9 @@
 
         iframe {
 	        border: 1px solid white;
-	        width: 90%;
-	        height:300px;
+	        width: 100%;
+            min-width: 300px;
+	        min-height:300px;
         }
 </style>
 
@@ -36,16 +37,20 @@
 <% } %>
 
 
-<table style="border:0px;padding:10px;">
+<table class="table" style="border:0px;padding:10px;">
 <tr>
 
 <td valign="top">&nbsp;<br>
 
 <% write_column(1); %>
 
-<td valign=top>&nbsp;<br>
+<td valign="top">&nbsp;<br>
 
 <% write_column(2); %>
+
+<td valign="top">&nbsp;<br>
+
+<% write_column(3); %>
 
 </table>
 
@@ -118,8 +123,8 @@ void write_column(int col)
 			}
 			else
 			{
-				Response.Write("\n<div class=panel>");
-				Response.Write("\n<img src=view_report.aspx?scale=2&view=" + dr["ds_chart_type"] + "&id=" + dr["ds_report"] + ">");
+				Response.Write("\n<div class='panel'>");
+				Response.Write("\n<img src='view_report.aspx?scale=2&view=" + dr["ds_chart_type"] + "&id=" + dr["ds_report"] + "'>");
 				Response.Write("\n</div>");
 			}
 		}
