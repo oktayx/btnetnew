@@ -382,7 +382,7 @@ function on_body_load()
 		sels[i].style.width = max_width; 
 	}
 	
-	change_dropdown_style();
+	//change_dropdown_style();
 	
 
 	spans = document.getElementsByTagName("span");
