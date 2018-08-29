@@ -636,7 +636,8 @@ values($tsk_bug, $tsk_last_updated_user, getdate(), N'updated task $tsk_id', 'up
             $(".date").datepicker({ dateFormat: date_format, duration: 'fast' })
 
             $("input[type=text]").addClass("form-control");
-            //$("select").addClass("form-control");
+            $("input[type='text']").attr("autocomplete", "off");
+
         }
 
         function show_calendar(el) {
