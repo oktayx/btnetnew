@@ -77,6 +77,7 @@
                         <li><a href="search.aspx">Search</a></li>
                         <li><a href="queries.aspx">Queries</a></li>
                         <li><a href="reports.aspx">Reports</a></li>
+                        <li><a href="tasks_all.aspx" target="_blank">Tasks</a></li>
                         <li><a href="admin.aspx">Admin</a></li>
                         <li class="dropdown">
                             <a class="dropdown-toggle" id="navMenu4" role="button" aria-expanded="false" aria-haspopup="true" href="#" data-toggle="dropdown">Settings<span class="caret"></span></a>
