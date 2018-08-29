@@ -51,7 +51,15 @@
             else {
                 return true;
             }
+        }
 
+        function checkSubmit(event) {
+            if (event.key == "Enter") {
+                if (event.target.id == "txtBugId")
+                    gotoBug();
+                else if (event.target.id == "txtSearch")
+                    gotoSearch();                    
+            }
         }
     </script>
 
@@ -84,11 +92,13 @@
 
                             <ul class="dropdown-menu" style="width: 300px;">
                                 <li style="display: inline-flex;">
-                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoBug()">Go to</a><input class="form-control input-sm" id="txtBugId" style="width: 200px;" type="text" placeholder="ID">
+                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoBug()">Go to</a>
+                                    <input class="form-control input-sm" id="txtBugId" style="width: 200px;" type="text" placeholder="ID" onkeyup="checkSubmit(event)" autocomplete="off">
                                 </li>
                                 <li class="divider" role="separator"></li>
                                 <li style="display: inline-flex;">
-                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoSearch()">Search</a><input class="form-control input-sm" id="txtSearch" style="width: 200px;" type="text" placeholder="Text">
+                                    <a style="min-width: 90px; width: 90px;" href="#" onclick="gotoSearch()">Search</a>
+                                    <input class="form-control input-sm" id="txtSearch" style="width: 200px;" type="text" placeholder="Text" onkeyup="checkSubmit(event)" autocomplete="off">
                                 </li>
                                 <li class="divider" role="separator"></li>
                                 <li><a href="edit_self.aspx">Settings</a></li>
