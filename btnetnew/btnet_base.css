@@ -202,14 +202,14 @@ a:hover   {color:#ff6633; font-size: 10pt; text-decoration: none; }*/
 
 .buglist_popup {
 	z-index: 111;
-	border-left: 1px solid silver;
+	/*border-left: 1px solid silver;
 	border-top: 1px solid silver;
 	border-right: 2px solid black;
-	border-bottom: 1px dashed #cccccc; 
+	border-bottom: 1px dashed #cccccc;*/ 
 	padding: 3px;
 	position:absolute; top:0; left:0;
-	background:#ddffdd;
-	color:black;
+	/*background:#ddffdd;
+	color:black;*/
 	display:none;
 	/* max-width: 500; */ /* Corey, 2013, says: does not work in ie, firefox, causes truncation in Chrome */
 	font-size: 7pt;

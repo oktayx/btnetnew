@@ -870,16 +870,16 @@ namespace btnet
                                     if (i == description_column)
                                     {
                                         // write description as a link
-                                        Response.Write("<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=edit_bug.aspx?id="
-                                            + string_bugid + ">");
+                                        Response.Write("<a onmouseover='on_mouse_over(this)' onmouseout='on_mouse_out()' href='edit_bug.aspx?id="
+                                            + string_bugid + "'>");
                                         Response.Write(HttpContext.Current.Server.HtmlEncode(dr[i].ToString()));
                                         Response.Write("</a>");
                                     }
                                     else if (i == search_desc_column)
                                     {
                                         // write description as a link
-                                        Response.Write("<a onmouseover=on_mouse_over(this) onmouseout=on_mouse_out() href=edit_bug.aspx?id="
-                                        + string_bugid + ">");
+                                        Response.Write("<a onmouseover='on_mouse_over(this)' onmouseout='on_mouse_out()' href='edit_bug.aspx?id="
+                                        + string_bugid + "'>");
                                         Response.Write(dr[i].ToString()); // already encoded
                                         Response.Write("</a>");
                                     }
@@ -900,11 +900,11 @@ namespace btnet
                                             }
                                             else
                                             {
-												Response.Write("<a href=edit_bug.aspx?id=");
+												Response.Write("<a href='edit_bug.aspx?id=");
 												Response.Write(string_bugid); // bg_id
 												Response.Write("#");
 												Response.Write(parts[1]);  // bp_id, the post id
-												Response.Write(">");
+												Response.Write("'>");
 												Response.Write(parts[0]); // sent, received, comment
 												Response.Write(" #");
 												Response.Write(parts[1]);
