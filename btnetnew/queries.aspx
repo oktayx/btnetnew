@@ -5,7 +5,7 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 <title id="titl" runat="server">btnet queries</title>
-<script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+<script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 
 </asp:Content>
 

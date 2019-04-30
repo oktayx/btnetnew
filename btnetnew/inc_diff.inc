@@ -1,5 +1,5 @@
 ﻿<link rel="StyleSheet" href="btnet.css" type="text/css">
-  <script type="text/javascript" language="JavaScript" src="jquery/jquery-1.3.2.min.js"></script>
+  <script type="text/javascript" lang="JavaScript" src="jquery/jquery-1.3.2.min.js"></script>
   <script>
 
     left_size = .46

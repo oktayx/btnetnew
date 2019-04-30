@@ -12,11 +12,11 @@
     <link href="jquery/jquery-ui.min.css" rel="stylesheet" />
     <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on search.aspx  -->
     <link rel="StyleSheet" href="custom/btnet_edit_bug.css" type="text/css">
-    <%--    <script type="text/javascript" language="JavaScript" src="jquery/jquery-1.3.2.min.js"></script>
-    <script type="text/javascript" language="JavaScript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>--%>
+    <%--    <script type="text/javascript" lang="JavaScript" src="jquery/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" lang="JavaScript" src="jquery/jquery-ui-1.7.2.custom.min.js"></script>--%>
     <script src="jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" language="JavaScript" src="jquery/jquery.textarearesizer.compressed.js"></script>
-    <script type="text/javascript" language="JavaScript" src="edit_bug.js"></script>
+    <script type="text/javascript" lang="JavaScript" src="jquery/jquery.textarearesizer.compressed.js"></script>
+    <script type="text/javascript" lang="JavaScript" src="edit_bug.js"></script>
     <%  if (security.user.use_fckeditor)
         { %>
     <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
@@ -264,7 +264,7 @@
                                         <textarea id="comment" rows="5" runat="server" class="form-control resizable2" onkeydown="mark_dirty()" onkeyup="mark_dirty()"></textarea>
                                     <tr>
                                         <td nowrap>
-                                            <asp:CheckBox runat="server" class="cb" ID="internal_only" />
+                                            <asp:CheckBox runat="server" CssClass="cb" ID="internal_only" />
                                             <span runat="server" id="internal_only_label">Comment visible to internal users only</span>
                                         <tr>
                                             <td nowrap align="left">
@@ -346,7 +346,7 @@
     <% Response.Write(Application["custom_footer"]); %>
 </asp:Content>
 
-<script language="C#" runat="server">
+<script lang="C#" runat="server">
 
     int id;
     String sql;

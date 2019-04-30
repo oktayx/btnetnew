@@ -72,7 +72,7 @@ order by hgrev_hg_date desc, hgap_path";
 <head>
 <title id="titl" runat="server">btnet view hg revisions</title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+<script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 </head>
 
 <body width=600>

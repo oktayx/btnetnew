@@ -80,7 +80,7 @@ end [view<br>history<br>(svn log)]";
 <head>
 <title id="titl" runat="server">btnet view svn revisions</title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+<script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 </head>
 
 <body width=600>

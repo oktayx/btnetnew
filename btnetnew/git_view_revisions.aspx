@@ -73,7 +73,7 @@ order by gitcom_git_date desc, gitap_path";
 <head>
 <title id="titl" runat="server">btnet view git commits</title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+<script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 </head>
 
 <body width=600>

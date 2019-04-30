@@ -137,7 +137,7 @@ order by tsk_sort_sequence, tsk_id";
     <link rel="StyleSheet" href="btnet.css" type="text/css">
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
 
-    <script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+    <script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 
 
     <script>

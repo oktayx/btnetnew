@@ -1120,9 +1120,9 @@ void write_custom_date_controls(string name)
 <!-- use btnet_edit_bug.css to control positioning on edit_bug.asp.  use btnet_search.css to control position on search.aspx  -->
 <link rel="StyleSheet" href="custom/btnet_search.css" type="text/css">
 <script src="jquery/jquery-ui.min.js"></script>
-<script type="text/javascript" language="JavaScript" src="bug_list.js"></script>
-<script type="text/javascript" language="JavaScript" src="suggest.js"></script>
-<script type="text/javascript" language="JavaScript" src="datejs/date.js"></script>
+<script type="text/javascript" lang="JavaScript" src="bug_list.js"></script>
+<script type="text/javascript" lang="JavaScript" src="suggest.js"></script>
+<script type="text/javascript" lang="JavaScript" src="datejs/date.js"></script>
 
 <!-- #include file = "inc_bugs.inc" -->
 

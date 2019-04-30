@@ -124,7 +124,7 @@ void fetch_and_write_history()
 <html>
 <title>hg log <% Response.Write(HttpUtility.HtmlEncode(file_path));%></title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="version_control_sel_rev.js"></script>
+<script type="text/javascript" lang="JavaScript" src="version_control_sel_rev.js"></script>
 <body>
 <p>
 <form id="frm" target=_blank action="hg_diff.aspx" method="GET">

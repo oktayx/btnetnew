@@ -45,7 +45,7 @@ Distributed under the terms of the GNU General Public License
     <title id="titl" runat="server">btnet all tasks</title>
     <link rel="StyleSheet" href="btnet.css" type="text/css">
     <link href="Content/bootstrap.min.css" rel="stylesheet" />
-    <script type="text/javascript" language="JavaScript" src="sortable.js"></script>
+    <script type="text/javascript" lang="JavaScript" src="sortable.js"></script>
 </head>
 <body>
     <div class="align">

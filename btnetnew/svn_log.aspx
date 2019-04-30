@@ -162,7 +162,7 @@ void fetch_and_write_history(string file_path)
 <html>
 <title>svn log <% Response.Write(HttpUtility.HtmlEncode(file_path));%></title>
 <link rel="StyleSheet" href="btnet.css" type="text/css">
-<script type="text/javascript" language="JavaScript" src="version_control_sel_rev.js"></script>
+<script type="text/javascript" lang="JavaScript" src="version_control_sel_rev.js"></script>
 <body>
 
 <form id="frm" target=_blank action="svn_diff.aspx" method="GET">
