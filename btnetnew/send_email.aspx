@@ -767,7 +767,9 @@ Distributed under the terms of the GNU General Public License
 	<%
         if (security.user.use_fckeditor)
         {
-            Response.Write("CKEDITOR.replace( 'body' )");
+            //CKEditor update
+            //Response.Write("CKEDITOR.replace( 'body' )");
+            Response.Write("loadCKEditor()");
         }
 	%>
 
@@ -778,6 +780,13 @@ Distributed under the terms of the GNU General Public License
     <% } %>
         }
 
+        function loadCKEditor() {
+            ClassicEditor
+            .create( document.querySelector( '#body' ) )
+            .catch( error => {
+                console.error( error );
+            } );
+        }
     </script>
 
 

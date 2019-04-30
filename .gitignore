@@ -259,3 +259,4 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+/btnetnew/App_Data/logs/btnet_log_2019_04_30.txt

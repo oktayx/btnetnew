@@ -45,20 +45,29 @@
             $(".warn").click(warn_if_dirty)
             $("textarea.resizable:not(.processed)").TextAreaResizer()
 
-	<% 
+        <% 
 
-        if (security.user.use_fckeditor)
-        {
-            Response.Write("CKEDITOR.replace( 'comment' )");
-        }
-        else
-        {
-            Response.Write("$('textarea.resizable2:not(.processed)').TextAreaResizer()");
+            if (security.user.use_fckeditor)
+            {
+                //CKEditor update
+                //Response.Write("CKEDITOR.replace( 'comment' )"); //OLD ck3.4.2
+                Response.Write("loadCKEditor()"); //NEW ck5
+            }
+            else
+            {
+                Response.Write("$('textarea.resizable2:not(.processed)').TextAreaResizer()");
+            }
+
+	    %>	
         }
 
-	%>	
+        function loadCKEditor() {
+            ClassicEditor
+            .create( document.querySelector( '#comment' ) )
+            .catch( error => {
+                console.error( error );
+            } );
         }
-
     </script>
 
 </asp:Content>
