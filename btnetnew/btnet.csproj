@@ -462,6 +462,7 @@
     <Compile Include="AppCode\authenticate.cs" />
     <Compile Include="AppCode\bug.cs" />
     <Compile Include="AppCode\bug_list.cs" />
+    <Compile Include="AppCode\dbf.cs" />
     <Compile Include="AppCode\dbutil.cs" />
     <Compile Include="AppCode\email.cs" />
     <Compile Include="AppCode\my_lucene.cs" />

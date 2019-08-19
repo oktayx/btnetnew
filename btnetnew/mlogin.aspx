@@ -1,5 +1,5 @@
 <%@ Page language="C#" validateRequest="false"%>
-<%@ Import Namespace="System.Data.SqlClient" %>
+<%--<%@ Import Namespace="System.Data.SqlClient" %>--%>
 <!--
 Copyright 2002-2013 Corey Trager
 Distributed under the terms of the GNU General Public License

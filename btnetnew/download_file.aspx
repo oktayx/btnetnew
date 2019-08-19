@@ -1,5 +1,5 @@
 <%@ Page language="C#"%>
-<%@ Import Namespace="System.Data.SqlClient" %>
+<%--<%@ Import Namespace="System.Data.SqlClient" %>--%>
 <!-- #include file = "inc.aspx" -->
 <script language="C#" runat="server">
 

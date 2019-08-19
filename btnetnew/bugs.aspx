@@ -302,7 +302,7 @@
             ds = DbUtil.get_dataset(bug_sql);
             dv = new DataView(ds.Tables[0]);
         }
-        catch (System.Data.SqlClient.SqlException e)
+        catch (Exception e)
         {
             sql_error = e.Message;
             dv = null;

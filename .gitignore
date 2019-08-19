@@ -260,3 +260,4 @@ paket-files/
 __pycache__/
 *.pyc
 /btnetnew/App_Data/logs/btnet_log_2019_04_30.txt
+/btnetnew/App_Data/logs/btnet_log_2019_08_19.txt

@@ -1,6 +1,6 @@
 <%@ Page Language="C#" ValidateRequest="false" %>
 
-<%@ Import Namespace="System.Data.SqlClient" %>
+<%--<%@ Import Namespace="System.Data.SqlClient" %>--%>
 <!--
 Copyright 2002-2011 Corey Trager
 Distributed under the terms of the GNU General Public License
@@ -24,35 +24,7 @@ Distributed under the terms of the GNU General Public License
 
         msg.InnerText = "";
 
-        // see if the connection string works
-        try
-        {
-            // Intentionally getting an extra connection here so that we fall into the right "catch"
-            SqlConnection conn = DbUtil.get_sqlconnection();
-            conn.Close();
-
-            try
-            {
-                DbUtil.execute_nonquery("select count(1) from users");
-
-            }
-            catch (SqlException e1)
-            {
-                Util.write_to_log(e1.Message);
-                Util.write_to_log(Util.get_setting("ConnectionString", "?"));
-                msg.InnerHtml = "Unable to find \"bugs\" table.<br>"
-                + "Click to <a href=install.aspx>setup database tables</a>";
-            }
-
-        }
-        catch (SqlException e2)
-        {
-            msg.InnerHtml = "Unable to connect.<br>"
-            + e2.Message + "<br>"
-            + "Check Web.config file \"ConnectionString\" setting.<br>"
-            + "Check also README.html<br>"
-            + "Check also <a href=http://sourceforge.net/projects/btnet/forums/forum/226938>Help Forum</a> on Sourceforge.";
-        }
+        dbf.Default_CheckDB(msg);
 
         // Get authentication mode
         string auth_mode = Util.get_setting("WindowsAuthentication", "0");
